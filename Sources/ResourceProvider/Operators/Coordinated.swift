@@ -30,6 +30,11 @@ private actor AsyncProviderCoordinator<ID: Hashable, Value> {
             return newTask
         }()
     }
+
+    // Helper to bridge actor isolation.
+    fileprivate nonisolated func valueFor(id: ID) async -> Value {
+        return await taskFor(id: id).value
+    }
 }
 
 public extension AsyncProvider {
@@ -44,7 +49,7 @@ public extension AsyncProvider {
         let coordinator = AsyncProviderCoordinator(parent: self)
 
         return .init { id in
-            await coordinator.taskFor(id: id).value
+            await coordinator.valueFor(id: id)
         }
     }
 }
@@ -74,6 +79,11 @@ private actor ThrowingAsyncProviderCoordinator<ID: Hashable, Value> {
             return newTask
         }()
     }
+
+    // Helper to bridge actor isolation.
+    fileprivate nonisolated func valueFor(id: ID) async throws -> Value {
+        return try await taskFor(id: id).value
+    }
 }
 
 public extension ThrowingAsyncProvider {
@@ -88,7 +98,7 @@ public extension ThrowingAsyncProvider {
         let coordinator = ThrowingAsyncProviderCoordinator(parent: self)
 
         return .init { id in
-            try await coordinator.taskFor(id: id).value
+            try await coordinator.valueFor(id: id)
         }
     }
 }
