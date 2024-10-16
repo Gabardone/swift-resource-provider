@@ -29,5 +29,5 @@ let package = Package(
             dependencies: ["ResourceProvider"]
         )
     ],
-    swiftLanguageModes: [.v5]
+    swiftLanguageModes: [.v5, .v6]
 )
