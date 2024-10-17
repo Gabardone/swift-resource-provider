@@ -43,7 +43,9 @@ public extension ThrowingSyncProvider {
             }
         }
     }
+}
 
+public extension ThrowingSyncProvider where ID: Sendable, Value: Sendable {
     /**
      Builds a provider that catches the exceptions thrown by the calling one.
 

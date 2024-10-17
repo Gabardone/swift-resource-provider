@@ -13,10 +13,10 @@ public extension SyncCache {
      mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
      can use it to encode or reconstitute any data lost in the id translation.
      - Parameters:
-       - toStorage: A block that translates a value from `OtherValue` to `Self.Value` so it can be stored by the cache.
+     - toStorage: A block that translates a value from `OtherValue` to `Self.Value` so it can be stored by the cache.
      It gets both the value and the associated id passed in. If translation is impossible or some other error occurs the
      block can return `nil`
-       - fromStorage: A block that translates a cached value to `OtherValue`. It gets both the cached value and the
+     - fromStorage: A block that translates a cached value to `OtherValue`. It gets both the cached value and the
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
      - Returns: A cache that takes `OtherValue` as its `Value` type.
      */
@@ -34,7 +34,9 @@ public extension SyncCache {
             }
         }
     }
+}
 
+public extension SyncCache where Value: Sendable {
     /**
      Maps a value type to the calling cache's value type.
 
@@ -49,7 +51,7 @@ public extension SyncCache {
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
      - Returns: A cache that takes `OtherValue` as its `Value` type.
      */
-    func mapValue<OtherValue>(
+    func mapValue<OtherValue: Sendable>(
         toStorage: @escaping (OtherValue) async -> Value?,
         fromStorage: @escaping (Value, ID) async -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
@@ -82,7 +84,7 @@ public extension AsyncCache {
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
      - Returns: A cache that takes `OtherValue` as its `Value` type.
      */
-    func mapValue<OtherValue>(
+    func mapValue<OtherValue: Sendable>(
         toStorage: @escaping (OtherValue) -> Value?,
         fromStorage: @escaping (Value, ID) -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
@@ -111,7 +113,7 @@ public extension AsyncCache {
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
      - Returns: A cache that takes `OtherValue` as its `Value` type.
      */
-    func mapValue<OtherValue>(
+    func mapValue<OtherValue: Sendable>(
         toStorage: @escaping (OtherValue) async -> Value?,
         fromStorage: @escaping (Value, ID) async -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {

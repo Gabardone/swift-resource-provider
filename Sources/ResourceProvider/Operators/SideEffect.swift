@@ -39,7 +39,9 @@ public extension SyncProvider {
             return result
         }
     }
+}
 
+public extension SyncProvider where ID: Sendable, Value: Sendable {
     /**
      Runs an asynchronous side effect with the returned value and id.
 
@@ -115,7 +117,9 @@ public extension ThrowingSyncProvider {
             return result
         }
     }
+}
 
+public extension ThrowingSyncProvider where ID: Sendable, Value: Sendable {
     /**
      Runs an asynchronous side effect with the returned value and id.
 

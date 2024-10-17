@@ -6,20 +6,18 @@
 //
 
 private actor SyncProviderSerializer<ID: Hashable, Value> {
-    typealias Serialized = SyncProvider<ID, Value>
+    let serializedProvider: (ID) -> Value
 
-    let serialized: Serialized
-
-    init(serializing provider: Serialized) {
-        self.serialized = provider
+    init(serializing provider: @escaping (ID) -> Value) {
+        self.serializedProvider = provider
     }
 
     func valueFor(id: ID) -> Value {
-        serialized.valueForID(id)
+        serializedProvider(id)
     }
 }
 
-public extension SyncProvider {
+public extension SyncProvider where ID: Sendable, Value: Sendable {
     /**
      Returns a wrapper for a sync provider that guarantees serialization.
 
@@ -28,7 +26,7 @@ public extension SyncProvider {
      - Returns: An `async` provider version of the calling `SyncProvider` that runs its calls serially.
      */
     func serialized() -> AsyncProvider<ID, Value> {
-        let serializedProvider = SyncProviderSerializer(serializing: self)
+        let serializedProvider = SyncProviderSerializer(serializing: valueForID)
 
         return AsyncProvider { id in
             await serializedProvider.valueFor(id: id)
@@ -50,7 +48,7 @@ private actor ThrowingSyncProviderSerializer<ID: Hashable, Value> {
     }
 }
 
-public extension ThrowingSyncProvider {
+public extension ThrowingSyncProvider where ID: Sendable, Value: Sendable {
     /**
      Returns a wrapper for a throwing sync provider that guarantees serialization.
 

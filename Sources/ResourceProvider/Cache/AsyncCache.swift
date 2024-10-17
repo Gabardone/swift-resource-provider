@@ -16,10 +16,10 @@ import Foundation
  */
 public protocol AsyncCache<ID, Value> {
     /// The id type that uniquely identifies cached values.
-    associatedtype ID: Hashable
+    associatedtype ID: Hashable & Sendable
 
     /// The type of value being cached.
-    associatedtype Value
+    associatedtype Value: Sendable
 
     /**
      Returns the value for the given `id`, if present.

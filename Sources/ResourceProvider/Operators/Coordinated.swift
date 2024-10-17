@@ -7,7 +7,7 @@
 
 import Foundation
 
-private actor AsyncProviderCoordinator<ID: Hashable, Value> {
+private actor AsyncProviderCoordinator<ID: Hashable & Sendable, Value: Sendable> {
     typealias Parent = AsyncProvider<ID, Value>
 
     init(parent: Parent) {
@@ -54,7 +54,7 @@ public extension AsyncProvider {
     }
 }
 
-private actor ThrowingAsyncProviderCoordinator<ID: Hashable, Value> {
+private actor ThrowingAsyncProviderCoordinator<ID: Hashable & Sendable, Value: Sendable> {
     typealias Parent = ThrowingAsyncProvider<ID, Value>
 
     init(parent: Parent) {

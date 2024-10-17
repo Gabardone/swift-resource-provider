@@ -14,7 +14,7 @@
  - A provider that catches the results of another one that fetches data from the network and replaces failures with a
  placeholder.
  */
-public struct AsyncProvider<ID: Hashable, Value> {
+public struct AsyncProvider<ID: Hashable & Sendable, Value: Sendable> {
     /**
      Returns, asynchronously, the value for the given value ID. An `AsyncProvider` is expected to always succeed in
      returning a value, use `ThrowingAsyncResourceProvider` if the operation may fail.

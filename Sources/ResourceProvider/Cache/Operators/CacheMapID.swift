@@ -15,7 +15,7 @@ public extension SyncCache {
      - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling cache.
      - Returns: A cache that takes `OtherID` as its `ID` type.
      */
-    func mapID<OtherID: Hashable>(_ transform: @escaping (OtherID) -> ID) -> some SyncCache<OtherID, Value> {
+    func mapID<OtherID: Hashable & Sendable>(_ transform: @escaping (OtherID) -> ID) -> some SyncCache<OtherID, Value> {
         AnySyncCache { id in
             valueFor(id: transform(id))
         } storeValueForID: { value, id in
@@ -34,7 +34,9 @@ public extension AsyncCache {
      - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling cache.
      - Returns: A cache that takes `OtherID` as its `ID` type.
      */
-    func mapID<OtherID: Hashable>(_ transform: @escaping (OtherID) -> ID) -> some AsyncCache<OtherID, Value> {
+    func mapID<OtherID: Hashable & Sendable>(
+        _ transform: @escaping (OtherID) -> ID
+    ) -> some AsyncCache<OtherID, Value> {
         AnyAsyncCache { id in
             await valueFor(id: transform(id))
         } storeValueForID: { value, id in

@@ -13,7 +13,7 @@
  - Resource download from the network.
  - Complex database retrieval.
  */
-public struct ThrowingAsyncProvider<ID: Hashable, Value> {
+public struct ThrowingAsyncProvider<ID: Hashable & Sendable, Value: Sendable> {
     /**
      Returns, asynchronously, the value for the given ID. A `ThrowingAsyncProvider` will throw if it fails to return a
      value. In that case, the implementation should ensure that the operations leaves no side effects in the provider's

@@ -6,8 +6,8 @@
 //
 
 private actor SyncCacheSerializer<
-    ID: Hashable,
-    Value,
+    ID: Hashable & Sendable,
+    Value: Sendable,
     Serialized: SyncCache
 > where Serialized.ID == ID, Serialized.Value == Value {
     private let serialized: Serialized
@@ -37,7 +37,7 @@ extension SyncCacheSerializer: AsyncCache {
     }
 }
 
-public extension SyncCache {
+public extension SyncCache where Value: Sendable {
     /**
      Returns a wrapper for a sync cache that guarantees serialization.
 

@@ -37,7 +37,9 @@ public extension SyncProvider {
             try interject(id) ?? valueForID(id)
         }
     }
+}
 
+public extension SyncProvider where ID: Sendable, Value: Sendable {
     /**
      Allows for optionally intercepting a request for an `id` and returning something different.
 
@@ -103,7 +105,9 @@ public extension ThrowingSyncProvider {
             try interject(id) ?? valueForID(id)
         }
     }
+}
 
+public extension ThrowingSyncProvider where ID: Sendable, Value: Sendable {
     /**
      Allows for optionally intercepting a request for an `id` and returning something different.
 
