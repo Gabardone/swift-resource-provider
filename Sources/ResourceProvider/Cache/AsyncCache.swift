@@ -14,7 +14,7 @@ import Foundation
  the main difference is that storing a value does not guarantee that it will be there when requested later as the cache
  is free to remove the value from storage in-between.
  */
-public protocol AsyncCache<ID, Value> {
+public protocol AsyncCache<ID, Value>: Sendable {
     /// The id type that uniquely identifies cached values.
     associatedtype ID: Hashable & Sendable
 

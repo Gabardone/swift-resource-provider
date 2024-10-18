@@ -34,7 +34,9 @@ public extension AsyncProvider {
      - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling provider.
      - Returns: A provider that takes `OtherID` as its `ID` type.
      */
-    func mapID<OtherID: Hashable>(_ transform: @escaping (OtherID) -> ID) -> AsyncProvider<OtherID, Value, Failure> {
+    func mapID<OtherID: Hashable>(
+        _ transform: @Sendable @escaping (OtherID) -> ID
+    ) -> AsyncProvider<OtherID, Value, Failure> {
         .init { otherID throws(Failure) in
             try await valueForID(transform(otherID))
         }

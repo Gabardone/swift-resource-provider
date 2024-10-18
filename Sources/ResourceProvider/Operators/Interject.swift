@@ -76,7 +76,7 @@ public extension AsyncProvider {
      - Parameter interject: A block that takes an `id` and either returns a value or `nil`
      - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
      */
-    func interject(_ interject: @escaping (ID) throws(Failure) -> Value?) -> Self {
+    func interject(_ interject: @Sendable @escaping (ID) throws(Failure) -> Value?) -> Self {
         .init { id throws(Failure) in
             if let result = try interject(id) {
                 result
@@ -97,7 +97,7 @@ public extension AsyncProvider {
      - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
      */
     func interject<OtherFailure: Error>(
-        _ interject: @escaping (ID) throws(OtherFailure) -> Value?
+        _ interject: @Sendable @escaping (ID) throws(OtherFailure) -> Value?
     ) -> AsyncProvider<ID, Value, any Error> {
         .init { id in
             if let result = try interject(id) {
@@ -118,7 +118,7 @@ public extension AsyncProvider {
      - Parameter interject: A block that takes an `id` and either returns a value or `nil`
      - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
      */
-    func interject(_ interject: @escaping (ID) async throws(Failure) -> Value?) -> AsyncProvider {
+    func interject(_ interject: @Sendable @escaping (ID) async throws(Failure) -> Value?) -> AsyncProvider {
         .init { id throws(Failure) in
             if let result = try await interject(id) {
                 result
@@ -139,7 +139,7 @@ public extension AsyncProvider {
      - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
      */
     func interject<OtherFailure: Error>(
-        _ interject: @escaping (ID) async throws(OtherFailure) -> Value?
+        _ interject: @Sendable @escaping (ID) async throws(OtherFailure) -> Value?
     ) -> AsyncProvider<ID, Value, any Error> {
         .init { id in
             if let result = try await interject(id) {
@@ -163,7 +163,7 @@ public extension AsyncProvider where Failure == Never {
      - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
      */
     func interject<OtherFailure: Error>(
-        _ interject: @escaping (ID) throws(OtherFailure) -> Value?
+        _ interject: @Sendable @escaping (ID) throws(OtherFailure) -> Value?
     ) -> AsyncProvider<ID, Value, OtherFailure> {
         .init { id throws(OtherFailure) in
             if let interjected = try interject(id) {
@@ -185,7 +185,7 @@ public extension AsyncProvider where Failure == Never {
      - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
      */
     func interject<OtherFailure: Error>(
-        _ interject: @escaping (ID) async throws(OtherFailure) -> Value?
+        _ interject: @Sendable @escaping (ID) async throws(OtherFailure) -> Value?
     ) -> AsyncProvider<ID, Value, OtherFailure> {
         .init { id throws(OtherFailure) in
             if let interjected = try await interject(id) {

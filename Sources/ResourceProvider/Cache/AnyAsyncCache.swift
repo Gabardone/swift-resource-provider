@@ -19,18 +19,18 @@ public struct AnyAsyncCache<ID: Hashable & Sendable, Value: Sendable> {
        - storeValueForID: Block that implements `AsyncCache.store(value:id:)`
      */
     public init(
-        valueForID: @escaping (ID) async -> Value? = { _ in nil },
-        storeValueForID: @escaping (Value, ID) async -> Void = { _, _ in }
+        valueForID: @Sendable @escaping (ID) async -> Value? = { _ in nil },
+        storeValueForID: @Sendable @escaping (Value, ID) async -> Void = { _, _ in }
     ) {
         self.valueForID = valueForID
         self.storeValueForID = storeValueForID
     }
 
     /// Implements `AsyncCache.valueFor(id:)`
-    public let valueForID: (ID) async -> Value?
+    public let valueForID: @Sendable (ID) async -> Value?
 
     /// Implements `AsyncCache.store(value:id:)`
-    public let storeValueForID: (Value, ID) async -> Void
+    public let storeValueForID: @Sendable (Value, ID) async -> Void
 }
 
 extension AnyAsyncCache: AsyncCache {

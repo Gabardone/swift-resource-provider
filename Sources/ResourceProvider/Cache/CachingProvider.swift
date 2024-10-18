@@ -29,7 +29,7 @@ public extension AsyncProvider {
      Adds caching to the calling provider.
      - Parameter cache: The cache to use to fetch and store values.
      */
-    func cache(_ cache: some SyncCache<ID, Value>) -> AsyncProvider {
+    func cache(_ cache: some SyncCache<ID, Value> & Sendable) -> AsyncProvider {
         sideEffect { value, id in
             cache.store(value: value, id: id)
         }

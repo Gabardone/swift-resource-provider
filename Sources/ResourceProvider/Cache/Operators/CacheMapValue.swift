@@ -36,7 +36,7 @@ public extension SyncCache {
     }
 }
 
-public extension SyncCache where Value: Sendable {
+public extension SyncCache where Self: Sendable {
     /**
      Maps a value type to the calling cache's value type.
 
@@ -52,8 +52,8 @@ public extension SyncCache where Value: Sendable {
      - Returns: A cache that takes `OtherValue` as its `Value` type.
      */
     func mapValue<OtherValue: Sendable>(
-        toStorage: @escaping (OtherValue) async -> Value?,
-        fromStorage: @escaping (Value, ID) async -> OtherValue?
+        toStorage: @Sendable @escaping (OtherValue) async -> Value?,
+        fromStorage: @Sendable @escaping (Value, ID) async -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
         AnyAsyncCache { id in
             if let storedValue = valueFor(id: id) {
@@ -85,8 +85,8 @@ public extension AsyncCache {
      - Returns: A cache that takes `OtherValue` as its `Value` type.
      */
     func mapValue<OtherValue: Sendable>(
-        toStorage: @escaping (OtherValue) -> Value?,
-        fromStorage: @escaping (Value, ID) -> OtherValue?
+        toStorage: @Sendable @escaping (OtherValue) -> Value?,
+        fromStorage: @Sendable @escaping (Value, ID) -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
         AnyAsyncCache { id in
             await valueFor(id: id).flatMap { storedValue in
@@ -114,8 +114,8 @@ public extension AsyncCache {
      - Returns: A cache that takes `OtherValue` as its `Value` type.
      */
     func mapValue<OtherValue: Sendable>(
-        toStorage: @escaping (OtherValue) async -> Value?,
-        fromStorage: @escaping (Value, ID) async -> OtherValue?
+        toStorage: @Sendable @escaping (OtherValue) async -> Value?,
+        fromStorage: @Sendable @escaping (Value, ID) async -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
         AnyAsyncCache { id in
             if let storedValue = await valueFor(id: id) {

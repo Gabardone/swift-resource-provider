@@ -74,7 +74,7 @@ public extension AsyncProvider {
      it wants.
      - Returns: A provider that has the given side effect when returning a value.
      */
-    func sideEffect(_ sideEffect: @escaping (Value, ID) throws(Failure) -> Void) -> AsyncProvider {
+    func sideEffect(_ sideEffect: @Sendable @escaping (Value, ID) throws(Failure) -> Void) -> AsyncProvider {
         .init { id throws(Failure) in
             let result = try await valueForID(id)
             try sideEffect(result, id)
@@ -92,7 +92,7 @@ public extension AsyncProvider {
      - Returns: A provider that has the given side effect when returning a value and may also `throw`.
      */
     func sideEffect<OtherFailure: Error>(
-        _ sideEffect: @escaping (Value, ID) throws(OtherFailure) -> Void
+        _ sideEffect: @Sendable @escaping (Value, ID) throws(OtherFailure) -> Void
     ) -> AsyncProvider<ID, Value, any Error> {
         .init { id in
             let result = try await valueForID(id)
@@ -110,7 +110,7 @@ public extension AsyncProvider {
      it wants.
      - Returns: An asynchronous provider that has the given side effect when returning a value.
      */
-    func sideEffect(_ sideEffect: @escaping (Value, ID) async throws(Failure) -> Void) -> AsyncProvider {
+    func sideEffect(_ sideEffect: @Sendable @escaping (Value, ID) async throws(Failure) -> Void) -> AsyncProvider {
         .init { id throws(Failure) in
             let result = try await valueForID(id)
             try await sideEffect(result, id)
@@ -128,7 +128,7 @@ public extension AsyncProvider {
      - Returns: A provider that has the given side effect when returning a value and may also `throw`.
      */
     func sideEffect<OtherFailure: Error>(
-        _ sideEffect: @escaping (Value, ID) async throws(OtherFailure) -> Void
+        _ sideEffect: @Sendable @escaping (Value, ID) async throws(OtherFailure) -> Void
     ) -> AsyncProvider<ID, Value, any Error> {
         .init { id in
             let result = try await valueForID(id)
@@ -149,7 +149,7 @@ public extension AsyncProvider where Failure == Never {
      - Returns: A provider that has the given side effect when returning a value and may also `throw`.
      */
     func sideEffect<OtherFailure: Error>(
-        _ sideEffect: @escaping (Value, ID) throws(OtherFailure) -> Void
+        _ sideEffect: @Sendable @escaping (Value, ID) throws(OtherFailure) -> Void
     ) -> AsyncProvider<ID, Value, OtherFailure> {
         .init { id throws(OtherFailure) in
             let result = await valueForID(id)
@@ -168,7 +168,7 @@ public extension AsyncProvider where Failure == Never {
      - Returns: A provider that has the given side effect when returning a value and may also `throw`.
      */
     func sideEffect<OtherFailure: Error>(
-        _ sideEffect: @escaping (Value, ID) async throws(OtherFailure) -> Void
+        _ sideEffect: @Sendable @escaping (Value, ID) async throws(OtherFailure) -> Void
     ) -> AsyncProvider<ID, Value, OtherFailure> {
         .init { id throws(OtherFailure) in
             let result = await valueForID(id)

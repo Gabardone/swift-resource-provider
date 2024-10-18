@@ -85,7 +85,7 @@ public extension AsyncProvider {
      - Returns: A provider that returns `OtherValue` as its value type.
      */
     func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) throws(Failure) -> OtherValue
+        _ transform: @Sendable @escaping (Value, ID) throws(Failure) -> OtherValue
     ) -> AsyncProvider<ID, OtherValue, Failure> {
         .init { id throws(Failure) in
             try await transform(valueForID(id), id)
@@ -106,7 +106,7 @@ public extension AsyncProvider {
      - Returns: A provider that returns `OtherValue` as its value type.
      */
     func mapValue<OtherValue, OtherFailure: Error>(
-        _ transform: @escaping (Value, ID) throws(OtherFailure) -> OtherValue
+        _ transform: @Sendable @escaping (Value, ID) throws(OtherFailure) -> OtherValue
     ) -> AsyncProvider<ID, OtherValue, any Error> {
         .init { id in
             try await transform(valueForID(id), id)
@@ -125,7 +125,7 @@ public extension AsyncProvider {
      - Returns: A provider that returns `OtherValue` as its value type.
      */
     func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) async throws(Failure) -> OtherValue
+        _ transform: @Sendable @escaping (Value, ID) async throws(Failure) -> OtherValue
     ) -> AsyncProvider<ID, OtherValue, Failure> {
         .init { id throws(Failure) in
             try await transform(valueForID(id), id)
@@ -146,7 +146,7 @@ public extension AsyncProvider {
      - Returns: A provider that returns `OtherValue` as its value type.
      */
     func mapValue<OtherValue, OtherFailure: Error>(
-        _ transform: @escaping (Value, ID) async throws(OtherFailure) -> OtherValue
+        _ transform: @Sendable @escaping (Value, ID) async throws(OtherFailure) -> OtherValue
     ) -> AsyncProvider<ID, OtherValue, any Error> {
         .init { id in
             try await transform(valueForID(id), id)
@@ -169,7 +169,7 @@ public extension AsyncProvider where Failure == Never {
      - Returns: A provider that returns `OtherValue` as its value type.
      */
     func mapValue<OtherValue, OtherFailure: Error>(
-        _ transform: @escaping (Value, ID) throws(OtherFailure) -> OtherValue
+        _ transform: @Sendable @escaping (Value, ID) throws(OtherFailure) -> OtherValue
     ) -> AsyncProvider<ID, OtherValue, OtherFailure> {
         .init { id throws(OtherFailure) in
             try await transform(valueForID(id), id)
@@ -190,7 +190,7 @@ public extension AsyncProvider where Failure == Never {
      - Returns: A provider that returns `OtherValue` as its value type.
      */
     func mapValue<OtherValue, OtherFailure: Error>(
-        _ transform: @escaping (Value, ID) async throws(OtherFailure) -> OtherValue
+        _ transform: @Sendable @escaping (Value, ID) async throws(OtherFailure) -> OtherValue
     ) -> AsyncProvider<ID, OtherValue, OtherFailure> {
         .init { id throws(OtherFailure) in
             try await transform(valueForID(id), id)

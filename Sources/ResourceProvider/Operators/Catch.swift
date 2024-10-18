@@ -39,7 +39,7 @@ public extension AsyncProvider {
      - Returns: An async provider that catches the exceptions thrown by the caller.
      */
     func `catch`<OtherFailure: Error>(
-        _ catcher: @escaping (Failure, ID) throws(OtherFailure) -> Value
+        _ catcher: @Sendable @escaping (Failure, ID) throws(OtherFailure) -> Value
     ) -> AsyncProvider<ID, Value, OtherFailure> {
         AsyncProvider<ID, Value, OtherFailure> { id throws(OtherFailure) in
             do throws(Failure) {
@@ -60,7 +60,7 @@ public extension AsyncProvider {
      - Returns: An async provider that catches the exceptions thrown by the caller.
      */
     func `catch`<OtherFailure: Error>(
-        _ catcher: @escaping (Failure, ID) async throws(OtherFailure) -> Value
+        _ catcher: @Sendable @escaping (Failure, ID) async throws(OtherFailure) -> Value
     ) -> AsyncProvider<ID, Value, OtherFailure> {
         .init { id throws(OtherFailure) in
             do throws(Failure) {
