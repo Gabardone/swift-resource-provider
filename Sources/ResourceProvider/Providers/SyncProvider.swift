@@ -15,13 +15,13 @@
  - To abstract away old synchronous APIs like AppKit document facilities where we are also limited in being able to make
  things asynchronous.
  */
-public struct SyncProvider<ID: Hashable, Value> {
+public struct SyncProvider<ID: Hashable, Value, Failure: Error> {
     /**
      Synchronously returns the value for the given `id`.
      - Parameter ID: The ID for the resource.
      - Returns: The value for the given `ID`
      */
-    public var valueForID: (ID) -> Value
+    public var valueForID: (ID) throws(Failure) -> Value
 }
 
 public extension Provider {
@@ -30,7 +30,9 @@ public extension Provider {
      - Parameter source: A block that generates values based on a given `ID`.
      - Returns: A synchronous provider that generates its values by running the given block.
      */
-    static func source<ID: Hashable, Value>(_ source: @escaping (ID) -> Value) -> SyncProvider<ID, Value> {
+    static func source<ID: Hashable, Value, Failure>(
+        _ source: @escaping (ID) throws(Failure) -> Value
+    ) -> SyncProvider<ID, Value, Failure> {
         SyncProvider(valueForID: source)
     }
 }

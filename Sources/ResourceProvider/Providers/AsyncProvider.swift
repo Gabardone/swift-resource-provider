@@ -14,14 +14,14 @@
  - A provider that catches the results of another one that fetches data from the network and replaces failures with a
  placeholder.
  */
-public struct AsyncProvider<ID: Hashable & Sendable, Value: Sendable> {
+public struct AsyncProvider<ID: Hashable & Sendable, Value: Sendable, Failure: Error> {
     /**
      Returns, asynchronously, the value for the given value ID. An `AsyncProvider` is expected to always succeed in
      returning a value, use `ThrowingAsyncResourceProvider` if the operation may fail.
      - Parameter ID: The ID for the resource.
      - Returns: The value for the given `ID`
      */
-    public var valueForID: (ID) async -> Value
+    public var valueForID: (ID) async throws(Failure) -> Value
 }
 
 public extension Provider {
@@ -30,9 +30,9 @@ public extension Provider {
      - Parameter source: A block that generates values based on a given `ID`.
      - Returns: An asynchronous provider that generates its values by running the given block.
      */
-    static func source<ID: Hashable, Value>(
-        _ source: @escaping (ID) async -> Value
-    ) -> AsyncProvider<ID, Value> {
+    static func source<ID: Hashable, Value, Failure: Error>(
+        _ source: @escaping (ID) async throws(Failure) -> Value
+    ) -> AsyncProvider<ID, Value, Failure> {
         AsyncProvider(valueForID: source)
     }
 }

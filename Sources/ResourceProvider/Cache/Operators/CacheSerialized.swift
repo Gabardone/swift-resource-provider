@@ -37,7 +37,7 @@ extension SyncCacheSerializer: AsyncCache {
     }
 }
 
-public extension SyncCache where Value: Sendable {
+public extension SyncCache where ID: Sendable, Value: Sendable {
     /**
      Returns a wrapper for a sync cache that guarantees serialization.
 

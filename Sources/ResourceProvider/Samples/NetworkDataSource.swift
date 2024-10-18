@@ -21,7 +21,7 @@ public extension Provider {
      - Make sure there's a `coordinated()` addition to the provider chain if you don't want the same `URL` to go to the
      network twice.
      */
-    static func networkDataSource(urlSession: URLSession = .shared) -> ThrowingAsyncProvider<URL, Data> {
+    static func networkDataSource(urlSession: URLSession = .shared) -> AsyncProvider<URL, Data, any Error> {
         source { url in
             try await urlSession.data(from: url).0
         }

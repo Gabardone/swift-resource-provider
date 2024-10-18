@@ -20,30 +20,9 @@ public extension SyncProvider {
      - Returns: A provider that returns `OtherValue` as its value type.
      */
     func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) -> OtherValue
-    ) -> SyncProvider<ID, OtherValue> {
-        .init { id in
-            transform(valueForID(id), id)
-        }
-    }
-
-    /**
-     Maps the calling provider's `Value` type to a different type.
-
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
-
-     If the given `transform` block throws the provider itself will throw as well.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
-     */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) throws -> OtherValue
-    ) -> ThrowingSyncProvider<ID, OtherValue> {
-        .init { id in
+        _ transform: @escaping (Value, ID) throws(Failure) -> OtherValue
+    ) -> SyncProvider<ID, OtherValue, Failure> {
+        .init { id throws(Failure) in
             try transform(valueForID(id), id)
         }
     }
@@ -55,64 +34,22 @@ public extension SyncProvider {
      mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
      can use it to encode or reconstitute any data lost in the id translation.
 
-     The method necessarily converts the synchronous provider into an asynchronous one.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
-     */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) async -> OtherValue
-    ) -> AsyncProvider<ID, OtherValue> {
-        .init { id in
-            await transform(valueForID(id), id)
-        }
-    }
-
-    /**
-     Maps the calling provider's `Value` type to a different type.
-
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
-
      If the given `transform` block throws the provider itself will throw as well.
-
-     The method necessarily converts the synchronous provider into an asynchronous one.
      - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
      and the associated id passed in. If translation is impossible or some other error occurs the block can return.
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) async throws -> OtherValue
-    ) -> ThrowingAsyncProvider<ID, OtherValue> {
+    func mapValue<OtherValue, OtherFailure: Error>(
+        _ transform: @escaping (Value, ID) throws(OtherFailure) -> OtherValue
+    ) -> SyncProvider<ID, OtherValue, any Error> {
         .init { id in
-            try await transform(valueForID(id), id)
+            try transform(valueForID(id), id)
         }
     }
 }
 
-public extension ThrowingSyncProvider {
-    /**
-     Maps the calling provider's `Value` type to a different type.
-
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
-     */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) -> OtherValue
-    ) -> ThrowingSyncProvider<ID, OtherValue> {
-        .init { id in
-            try transform(valueForID(id), id)
-        }
-    }
-
+public extension SyncProvider where Failure == Never {
     /**
      Maps the calling provider's `Value` type to a different type.
 
@@ -126,55 +63,11 @@ public extension ThrowingSyncProvider {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) throws -> OtherValue
-    ) -> ThrowingSyncProvider<ID, OtherValue> {
-        .init { id in
+    func mapValue<OtherValue, OtherFailure: Error>(
+        _ transform: @escaping (Value, ID) throws(OtherFailure) -> OtherValue
+    ) -> SyncProvider<ID, OtherValue, OtherFailure> {
+        .init { id throws(OtherFailure) in
             try transform(valueForID(id), id)
-        }
-    }
-
-    /**
-     Maps the calling provider's `Value` type to a different type.
-
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
-
-     The method necessarily converts the synchronous provider into an asynchronous one.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
-     */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) async -> OtherValue
-    ) -> ThrowingAsyncProvider<ID, OtherValue> {
-        .init { id in
-            try await transform(valueForID(id), id)
-        }
-    }
-
-    /**
-     Maps the calling provider's `Value` type to a different type.
-
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
-
-     If the given `transform` block throws the provider itself will throw as well.
-
-     The method necessarily converts the synchronous provider into an asynchronous one.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
-     */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) async throws -> OtherValue
-    ) -> ThrowingAsyncProvider<ID, OtherValue> {
-        .init { id in
-            try await transform(valueForID(id), id)
         }
     }
 }
@@ -192,10 +85,10 @@ public extension AsyncProvider {
      - Returns: A provider that returns `OtherValue` as its value type.
      */
     func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) -> OtherValue
-    ) -> AsyncProvider<ID, OtherValue> {
-        .init { id in
-            await transform(valueForID(id), id)
+        _ transform: @escaping (Value, ID) throws(Failure) -> OtherValue
+    ) -> AsyncProvider<ID, OtherValue, Failure> {
+        .init { id throws(Failure) in
+            try await transform(valueForID(id), id)
         }
     }
 
@@ -212,9 +105,9 @@ public extension AsyncProvider {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) throws -> OtherValue
-    ) -> ThrowingAsyncProvider<ID, OtherValue> {
+    func mapValue<OtherValue, OtherFailure: Error>(
+        _ transform: @escaping (Value, ID) throws(OtherFailure) -> OtherValue
+    ) -> AsyncProvider<ID, OtherValue, any Error> {
         .init { id in
             try await transform(valueForID(id), id)
         }
@@ -232,10 +125,10 @@ public extension AsyncProvider {
      - Returns: A provider that returns `OtherValue` as its value type.
      */
     func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) async -> OtherValue
-    ) -> AsyncProvider<ID, OtherValue> {
-        .init { id in
-            await transform(valueForID(id), id)
+        _ transform: @escaping (Value, ID) async throws(Failure) -> OtherValue
+    ) -> AsyncProvider<ID, OtherValue, Failure> {
+        .init { id throws(Failure) in
+            try await transform(valueForID(id), id)
         }
     }
 
@@ -252,31 +145,33 @@ public extension AsyncProvider {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) async throws -> OtherValue
-    ) -> ThrowingAsyncProvider<ID, OtherValue> {
+    func mapValue<OtherValue, OtherFailure: Error>(
+        _ transform: @escaping (Value, ID) async throws(OtherFailure) -> OtherValue
+    ) -> AsyncProvider<ID, OtherValue, any Error> {
         .init { id in
             try await transform(valueForID(id), id)
         }
     }
 }
 
-public extension ThrowingAsyncProvider {
+public extension AsyncProvider where Failure == Never {
     /**
      Maps the calling provider's `Value` type to a different type.
 
      If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
      mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
      can use it to encode or reconstitute any data lost in the id translation.
+
+     If the given `transform` block throws the provider itself will throw as well.
      - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
      and the associated id passed in. If translation is impossible or some other error occurs the block can return.
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) -> OtherValue
-    ) -> ThrowingAsyncProvider<ID, OtherValue> {
-        .init { id in
+    func mapValue<OtherValue, OtherFailure: Error>(
+        _ transform: @escaping (Value, ID) throws(OtherFailure) -> OtherValue
+    ) -> AsyncProvider<ID, OtherValue, OtherFailure> {
+        .init { id throws(OtherFailure) in
             try await transform(valueForID(id), id)
         }
     }
@@ -294,50 +189,10 @@ public extension ThrowingAsyncProvider {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) throws -> OtherValue
-    ) -> ThrowingAsyncProvider<ID, OtherValue> {
-        .init { id in
-            try await transform(valueForID(id), id)
-        }
-    }
-
-    /**
-     Maps the calling provider's `Value` type to a different type.
-
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
-     */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) async -> OtherValue
-    ) -> ThrowingAsyncProvider<ID, OtherValue> {
-        .init { id in
-            try await transform(valueForID(id), id)
-        }
-    }
-
-    /**
-     Maps the calling provider's `Value` type to a different type.
-
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
-
-     If the given `transform` block throws the provider itself will throw as well.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
-     */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) async throws -> OtherValue
-    ) -> ThrowingAsyncProvider<ID, OtherValue> {
-        .init { id in
+    func mapValue<OtherValue, OtherFailure: Error>(
+        _ transform: @escaping (Value, ID) async throws(OtherFailure) -> OtherValue
+    ) -> AsyncProvider<ID, OtherValue, OtherFailure> {
+        .init { id throws(OtherFailure) in
             try await transform(valueForID(id), id)
         }
     }
