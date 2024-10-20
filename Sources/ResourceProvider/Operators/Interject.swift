@@ -7,6 +7,38 @@
 
 // MARK: - SyncProvider Interjection
 
+private struct InterjectingNeverFailureSyncProvider<Interjected: SyncProvider>: SyncProvider {
+    typealias Interjector = (Interjected.ID) -> Interjected.Value?
+
+    var interjected: Interjected
+
+    var interjector: Interjector
+
+    func valueFor(id: Interjected.ID) throws(Interjected.Failure) -> Interjected.Value {
+        if let interjection = interjector(id) {
+            interjection
+        } else {
+            try interjected.valueFor(id: id)
+        }
+    }
+}
+
+public extension SyncProvider {
+    /**
+     Allows for optionally intercepting a request for an `id` and returning something different.
+
+     The block will be called before calling further into the provider chain and if the block returns a non-`nil` value
+     it will return that instead of calling in further. If it throws it will also skip calling further in as well.
+
+     If the block returns `nil` then the provider will continue as expected.
+     - Parameter interject: A block that takes an `id` and either returns a value or `nil`
+     - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
+     */
+    func interject(_ interject: @escaping (ID) -> Value?) -> some SyncProvider<ID, Value, Failure> {
+        InterjectingNeverFailureSyncProvider(interjected: self, interjector: interject)
+    }
+}
+
 private struct InterjectingSameFailureSyncProvider<Interjected: SyncProvider>: SyncProvider {
     typealias Interjector = (Interjected.ID) throws(Interjected.Failure) -> Interjected.Value?
 
@@ -34,6 +66,7 @@ public extension SyncProvider {
      - Parameter interject: A block that takes an `id` and either returns a value or `nil`
      - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
      */
+    @_disfavoredOverload
     func interject(_ interject: @escaping (ID) throws(Failure) -> Value?) -> some SyncProvider<ID, Value, Failure> {
         InterjectingSameFailureSyncProvider(interjected: self, interjector: interject)
     }
@@ -66,6 +99,7 @@ public extension SyncProvider {
      - Parameter interject: A block that takes an `id` and either returns a value or `nil`
      - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
      */
+    @_disfavoredOverload
     func interject<OtherFailure: Error>(
         _ interject: @escaping (ID) throws(OtherFailure) -> Value?
     ) -> some SyncProvider<ID, Value, any Error> {
@@ -112,6 +146,42 @@ extension SyncProvider where Failure == Never {
 
 // MARK: - Sendable SyncProvider Interjection
 
+private struct InterjectingNoFailureSendableSyncProvider<
+    Interjected: SyncProvider & Sendable
+>: SyncProvider, Sendable {
+    typealias Interjector = @Sendable (Interjected.ID) -> Interjected.Value?
+
+    var interjected: Interjected
+
+    var interjector: Interjector
+
+    func valueFor(id: Interjected.ID) throws(Interjected.Failure) -> Interjected.Value {
+        if let interjection = interjector(id) {
+            interjection
+        } else {
+            try interjected.valueFor(id: id)
+        }
+    }
+}
+
+public extension SyncProvider where Self: Sendable {
+    /**
+     Allows for optionally intercepting a request for an `id` and returning something different.
+
+     The block will be called before calling further into the provider chain and if the block returns a non-`nil` value
+     it will return that instead of calling in further. If it throws it will also skip calling further in as well.
+
+     If the block returns `nil` then the provider will continue as expected.
+     - Parameter interject: A block that takes an `id` and either returns a value or `nil`
+     - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
+     */
+    func interject(
+        _ interject: @escaping @Sendable (ID) -> Value?
+    ) -> some SyncProvider<ID, Value, Failure> & Sendable {
+        InterjectingNoFailureSendableSyncProvider(interjected: self, interjector: interject)
+    }
+}
+
 private struct InterjectingSameFailureSendableSyncProvider<
     Interjected: SyncProvider & Sendable
 >: SyncProvider, Sendable {
@@ -141,6 +211,7 @@ public extension SyncProvider where Self: Sendable {
      - Parameter interject: A block that takes an `id` and either returns a value or `nil`
      - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
      */
+    @_disfavoredOverload
     func interject(
         _ interject: @escaping @Sendable (ID) throws(Failure) -> Value?
     ) -> some SyncProvider<ID, Value, Failure> & Sendable {
@@ -178,6 +249,7 @@ public extension SyncProvider where Self: Sendable {
      - Parameter interject: A block that takes an `id` and either returns a value or `nil`
      - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
      */
+    @_disfavoredOverload
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) throws(OtherFailure) -> Value?
     ) -> some SyncProvider<ID, Value, any Error> & Sendable {

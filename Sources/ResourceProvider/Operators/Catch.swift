@@ -5,7 +5,8 @@
 //  Created by Óscar Morales Vivó on 9/23/24.
 //
 
-/// Declared mostly for display in stack traces.
+// MARK: - SyncProvider Catching
+
 private struct CatchingSyncProvider<Caught: SyncProvider, Failure: Error>: SyncProvider {
     typealias Catcher = (Caught.Failure, ID) throws(Failure) -> Caught.Value
 
@@ -39,7 +40,8 @@ public extension SyncProvider {
     }
 }
 
-/// Declared mostly for display in stack traces.
+// MARK: - Sendable SyncProvider Catching
+
 private struct CatchingSendableSyncProvider<Caught: SyncProvider & Sendable, Failure: Error>: SyncProvider, Sendable {
     typealias Catcher = @Sendable (Caught.Failure, ID) throws(Failure) -> Caught.Value
 
@@ -63,6 +65,8 @@ public extension SyncProvider where Self: Sendable, ID: Sendable, Value: Sendabl
         CatchingSendableSyncProvider(caught: self, catcher: catcher)
     }
 }
+
+// MARK: - AsyncProvider Catching
 
 public extension AsyncProvider {
     /**

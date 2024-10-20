@@ -7,6 +7,20 @@
 
 import Foundation
 
+// MARK: - SyncProvider Map ID
+
+private struct IDMappingSyncProvider<Mapped: SyncProvider, ID: Hashable>: SyncProvider {
+    typealias IDMapper = (ID) -> Mapped.ID
+
+    var mapped: Mapped
+
+    var idMapper: IDMapper
+
+    func valueFor(id: ID) throws(Mapped.Failure) -> Mapped.Value {
+        try mapped.valueFor(id: idMapper(id))
+    }
+}
+
 public extension SyncProvider {
     /**
      Maps an id type to the calling provider's id type.
@@ -20,9 +34,24 @@ public extension SyncProvider {
     func mapID<OtherID: Hashable>(
         _ transform: @escaping (OtherID) -> ID
     ) -> some SyncProvider<OtherID, Value, Failure> {
-        AnySyncProvider { otherID throws(Failure) in
-            try valueFor(id: transform(otherID))
-        }
+        IDMappingSyncProvider(mapped: self, idMapper: transform)
+    }
+}
+
+// MARK: - Sendable SyncProvider Map ID
+
+private struct IDMappingSendableSyncProvider<
+    Mapped: SyncProvider & Sendable,
+    ID: Hashable
+>: SyncProvider, Sendable {
+    typealias IDMapper = @Sendable (ID) -> Mapped.ID
+
+    var mapped: Mapped
+
+    var idMapper: IDMapper
+
+    func valueFor(id: ID) throws(Mapped.Failure) -> Mapped.Value {
+        try mapped.valueFor(id: idMapper(id))
     }
 }
 
@@ -39,11 +68,11 @@ public extension SyncProvider where Self: Sendable, Value: Sendable {
     func mapID<OtherID: Hashable & Sendable>(
         _ transform: @escaping @Sendable (OtherID) -> ID
     ) -> some SyncProvider<OtherID, Value, Failure> & Sendable {
-        AnySendableSyncProvider { otherID throws(Failure) in
-            try valueFor(id: transform(otherID))
-        }
+        IDMappingSendableSyncProvider(mapped: self, idMapper: transform)
     }
 }
+
+// MARK: - AsyncProvider Map ID
 
 public extension AsyncProvider {
     /**
