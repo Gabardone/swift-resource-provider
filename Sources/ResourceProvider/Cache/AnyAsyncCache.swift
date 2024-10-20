@@ -15,7 +15,7 @@ public struct AnyAsyncCache<ID: Hashable, Value> {
     /**
      A type erased cache has its functionality injected as blocks.
      - Parameters:
-       - valueForID: Block that implements `AsyncCache.valueFor(id:)`
+       - valueForID: Block that implements `AsyncCache.value(for:)`
        - storeValueForID: Block that implements `AsyncCache.store(value:id:)`
      */
     public init(
@@ -26,7 +26,7 @@ public struct AnyAsyncCache<ID: Hashable, Value> {
         self.storeValueForID = storeValueForID
     }
 
-    /// Implements `AsyncCache.valueFor(id:)`
+    /// Implements `AsyncCache.value(for:)`
     public let valueForID: (ID) async -> Value?
 
     /// Implements `AsyncCache.store(value:id:)`
@@ -34,7 +34,7 @@ public struct AnyAsyncCache<ID: Hashable, Value> {
 }
 
 extension AnyAsyncCache: AsyncCache {
-    public func valueFor(id: ID) async -> Value? {
+    public func value(for id: ID) async -> Value? {
         await valueForID(id)
     }
 

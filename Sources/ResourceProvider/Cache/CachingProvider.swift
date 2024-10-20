@@ -19,7 +19,7 @@ public extension SyncProvider {
             cache.store(value: value, id: id)
         }
         .interject { id in
-            cache.valueFor(id: id)
+            cache.value(for: id)
         }
     }
 
@@ -34,7 +34,7 @@ public extension SyncProvider {
             await cache.store(value: value, id: id)
         }
         .interject { id in
-            await cache.valueFor(id: id)
+            await cache.value(for: id)
         }
     }
 }
@@ -51,7 +51,7 @@ public extension ThrowingSyncProvider {
             cache.store(value: value, id: id)
         }
         .interject { id in
-            cache.valueFor(id: id)
+            cache.value(for: id)
         }
     }
 
@@ -66,7 +66,7 @@ public extension ThrowingSyncProvider {
             await cache.store(value: value, id: id)
         }
         .interject { id in
-            await cache.valueFor(id: id)
+            await cache.value(for: id)
         }
     }
 }
@@ -81,7 +81,7 @@ public extension AsyncProvider {
             cache.store(value: value, id: id)
         }
         .interject { id in
-            cache.valueFor(id: id)
+            cache.value(for: id)
         }
     }
 
@@ -94,7 +94,7 @@ public extension AsyncProvider {
             await cache.store(value: value, id: id)
         }
         .interject { id in
-            await cache.valueFor(id: id)
+            await cache.value(for: id)
         }
     }
 }
@@ -109,7 +109,7 @@ public extension ThrowingAsyncProvider {
             cache.store(value: value, id: id)
         }
         .interject { id in
-            cache.valueFor(id: id)
+            cache.value(for: id)
         }
     }
 
@@ -122,7 +122,7 @@ public extension ThrowingAsyncProvider {
             await cache.store(value: value, id: id)
         }
         .interject { id in
-            await cache.valueFor(id: id)
+            await cache.value(for: id)
         }
     }
 }

@@ -24,7 +24,7 @@ public struct WeakObjectCache<ID: Hashable, Value: AnyObject> {
 }
 
 extension WeakObjectCache: SyncCache {
-    public func valueFor(id: ID) -> Value? {
+    public func value(for id: ID) -> Value? {
         weakObjects.object(forKey: .init(wrapping: id))
     }
 

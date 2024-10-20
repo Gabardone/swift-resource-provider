@@ -29,7 +29,7 @@ public protocol AsyncCache<ID, Value> {
      - Parameter id: The id whose potentially cached value we want.
      - Returns: The value for `id`, if currently stored in the cache, or `nil` if not.
      */
-    func valueFor(id: ID) async -> Value?
+    func value(for id: ID) async -> Value?
 
     /**
      Stores the given value in the cache.
@@ -57,7 +57,7 @@ public protocol AsyncCache<ID, Value> {
 public extension AsyncCache {
     func eraseToAnyCache() -> AnyAsyncCache<ID, Value> {
         AnyAsyncCache { id in
-            await valueFor(id: id)
+            await value(for: id)
         } storeValueForID: { value, id in
             await store(value: value, id: id)
         }

@@ -51,7 +51,7 @@ public struct LocalFileDataCache {
 
 @available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
 extension LocalFileDataCache: SyncCache {
-    public func valueFor(id: FilePath) -> Data? {
+    public func value(for id: FilePath) -> Data? {
         fileManager.contents(atPath: storageDirectory.appending(id.components).description)
     }
 

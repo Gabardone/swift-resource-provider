@@ -26,7 +26,7 @@ public protocol SyncCache<ID, Value> {
      - Parameter id: The id whose potentially cached value we want.
      - Returns: The value for `id`, if currently stored in the cache, or `nil` if not.
      */
-    func valueFor(id: ID) -> Value?
+    func value(for id: ID) -> Value?
 
     /**
      Stores the given value in the cache.
@@ -59,12 +59,12 @@ public extension SyncCache {
      - Parameter id: The id whose potential value we want to fetch.
      */
     subscript(id: ID) -> Value? {
-        valueFor(id: id)
+        value(for: id)
     }
 
     func eraseToAnyCache() -> AnySyncCache<ID, Value> {
         AnySyncCache { id in
-            valueFor(id: id)
+            value(for: id)
         } storeValueForID: { value, id in
             store(value: value, id: id)
         }

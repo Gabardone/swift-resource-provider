@@ -18,8 +18,8 @@ private actor SyncCacheSerializer<
 }
 
 extension SyncCacheSerializer: AsyncCache {
-    func valueFor(id: ID) -> Value? {
-        serialized.valueFor(id: id)
+    func value(for id: ID) -> Value? {
+        serialized.value(for: id)
     }
 
     func store(value: Value, id: ID) {

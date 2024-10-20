@@ -14,7 +14,7 @@ private actor SyncProviderSerializer<ID: Hashable, Value> {
         self.serialized = provider
     }
 
-    func valueFor(id: ID) -> Value {
+    func value(for id: ID) -> Value {
         serialized.valueForID(id)
     }
 }
@@ -31,7 +31,7 @@ public extension SyncProvider {
         let serializedProvider = SyncProviderSerializer(serializing: self)
 
         return AsyncProvider { id in
-            await serializedProvider.valueFor(id: id)
+            await serializedProvider.value(for: id)
         }
     }
 }
@@ -45,7 +45,7 @@ private actor ThrowingSyncProviderSerializer<ID: Hashable, Value> {
         self.serialized = provider
     }
 
-    func valueFor(id: ID) throws -> Value {
+    func value(for id: ID) throws -> Value {
         try serialized.valueForID(id)
     }
 }
@@ -62,7 +62,7 @@ public extension ThrowingSyncProvider {
         let serializedProvider = ThrowingSyncProviderSerializer(serializing: self)
 
         return ThrowingAsyncProvider { id in
-            try await serializedProvider.valueFor(id: id)
+            try await serializedProvider.value(for: id)
         }
     }
 }
