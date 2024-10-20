@@ -14,7 +14,7 @@ public extension SyncProvider {
      Adding a synchronous cache to a synchronous provider leaves the result synchronous.
      - Parameter cache: The cache to use to fetch and store values.
      */
-    func cache(_ cache: some SyncCache<ID, Value>) -> SyncProvider {
+    func cache(_ cache: some SyncCache<ID, Value>) -> some SyncProvider<ID, Value, Failure> {
         sideEffect { value, id in
             cache.store(value: value, id: id)
         }

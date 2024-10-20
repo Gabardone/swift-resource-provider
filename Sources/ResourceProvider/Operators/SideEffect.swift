@@ -15,9 +15,11 @@ public extension SyncProvider {
      it wants.
      - Returns: A provider that has the given side effect when returning a value.
      */
-    func sideEffect(_ sideEffect: @escaping (Value, ID) throws(Failure) -> Void) -> SyncProvider {
-        .init { id throws(Failure) in
-            let result = try valueForID(id)
+    func sideEffect(
+        _ sideEffect: @escaping (Value, ID) throws(Failure) -> Void
+    ) -> some SyncProvider<ID, Value, Failure> {
+        AnySyncProvider { id throws(Failure) in
+            let result = try valueFor(id: id)
             try sideEffect(result, id)
             return result
         }
@@ -34,9 +36,9 @@ public extension SyncProvider {
      */
     func sideEffect<OtherFailure: Error>(
         _ sideEffect: @escaping (Value, ID) throws(OtherFailure) -> Void
-    ) -> SyncProvider<ID, Value, any Error> {
-        .init { id in
-            let result = try valueForID(id)
+    ) -> some SyncProvider<ID, Value, any Error> {
+        AnySyncProvider { id in
+            let result = try valueFor(id: id)
             try sideEffect(result, id)
             return result
         }
@@ -55,9 +57,9 @@ public extension SyncProvider where Failure == Never {
      */
     func sideEffect<OtherFailure: Error>(
         _ sideEffect: @escaping (Value, ID) throws(OtherFailure) -> Void
-    ) -> SyncProvider<ID, Value, OtherFailure> {
-        .init { id throws(OtherFailure) in
-            let result = valueForID(id)
+    ) -> some SyncProvider<ID, Value, OtherFailure> {
+        AnySyncProvider { id throws(OtherFailure) in
+            let result = valueFor(id: id)
             try sideEffect(result, id)
             return result
         }

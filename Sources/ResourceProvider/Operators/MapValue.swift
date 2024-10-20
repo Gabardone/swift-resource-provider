@@ -21,9 +21,9 @@ public extension SyncProvider {
      */
     func mapValue<OtherValue>(
         _ transform: @escaping (Value, ID) throws(Failure) -> OtherValue
-    ) -> SyncProvider<ID, OtherValue, Failure> {
-        .init { id throws(Failure) in
-            try transform(valueForID(id), id)
+    ) -> some SyncProvider<ID, OtherValue, Failure> {
+        AnySyncProvider { id throws(Failure) in
+            try transform(valueFor(id: id), id)
         }
     }
 
@@ -42,9 +42,9 @@ public extension SyncProvider {
      */
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping (Value, ID) throws(OtherFailure) -> OtherValue
-    ) -> SyncProvider<ID, OtherValue, any Error> {
-        .init { id in
-            try transform(valueForID(id), id)
+    ) -> some SyncProvider<ID, OtherValue, any Error> {
+        AnySyncProvider { id in
+            try transform(valueFor(id: id), id)
         }
     }
 }
@@ -65,9 +65,9 @@ public extension SyncProvider where Failure == Never {
      */
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping (Value, ID) throws(OtherFailure) -> OtherValue
-    ) -> SyncProvider<ID, OtherValue, OtherFailure> {
-        .init { id throws(OtherFailure) in
-            try transform(valueForID(id), id)
+    ) -> some SyncProvider<ID, OtherValue, OtherFailure> {
+        AnySyncProvider { id throws(OtherFailure) in
+            try transform(valueFor(id: id), id)
         }
     }
 }

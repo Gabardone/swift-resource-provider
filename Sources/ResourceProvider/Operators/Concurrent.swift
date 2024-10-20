@@ -1,21 +1,9 @@
 //
-//  Serialized.swift
+//  Concurrent.swift
 //  swift-resource-provider
 //
-//  Created by Óscar Morales Vivó on 10/3/24.
+//  Created by Óscar Morales Vivó on 10/19/24.
 //
-
-private actor SyncProviderSerializer<Provider: SyncProvider & Sendable> {
-    let serializedProvider: Provider
-
-    init(serializing provider: Provider) {
-        self.serializedProvider = provider
-    }
-
-    func valueFor(id: Provider.ID) throws(Provider.Failure) -> Provider.Value {
-        try serializedProvider.valueFor(id: id)
-    }
-}
 
 public extension SyncProvider where Self: Sendable, ID: Sendable, Value: Sendable {
     /**
@@ -28,11 +16,9 @@ public extension SyncProvider where Self: Sendable, ID: Sendable, Value: Sendabl
      - TODO: Talk about IKWID for making valueForID functionally `@Sendable`
      - Returns: An `async` provider version of the calling `SyncProvider` that runs its calls serially.
      */
-    func serialized() -> AsyncProvider<ID, Value, Failure> {
-        let serializedProvider = SyncProviderSerializer(serializing: self)
-
+    func concurrent() -> AsyncProvider<ID, Value, Failure> {
         return AsyncProvider { id throws(Failure) in
-            try await serializedProvider.valueFor(id: id)
+            try valueFor(id: id)
         }
     }
 }

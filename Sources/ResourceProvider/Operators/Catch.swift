@@ -5,6 +5,23 @@
 //  Created by Óscar Morales Vivó on 9/23/24.
 //
 
+/// Declared mostly for display in stack traces.
+private struct CatchingSyncProvider<Caught: SyncProvider, Failure: Error>: SyncProvider {
+    typealias Catcher = (Caught.Failure, ID) throws(Failure) -> Caught.Value
+
+    var caught: Caught
+
+    var catcher: Catcher
+
+    func valueFor(id: Caught.ID) throws(Failure) -> Caught.Value {
+        do throws(Caught.Failure) {
+            return try caught.valueFor(id: id)
+        } catch {
+            return try catcher(error, id)
+        }
+    }
+}
+
 public extension SyncProvider {
     /**
      Builds a provider that catches the exceptions thrown by the calling one.
@@ -17,14 +34,33 @@ public extension SyncProvider {
      */
     func `catch`<OtherFailure: Error>(
         _ catcher: @escaping (Failure, ID) throws(OtherFailure) -> Value
-    ) -> SyncProvider<ID, Value, OtherFailure> {
-        SyncProvider<ID, Value, OtherFailure> { id throws(OtherFailure) in
-            do throws(Failure) {
-                return try valueForID(id)
-            } catch {
-                return try catcher(error, id)
-            }
+    ) -> some SyncProvider<ID, Value, OtherFailure> {
+        CatchingSyncProvider(caught: self, catcher: catcher)
+    }
+}
+
+/// Declared mostly for display in stack traces.
+private struct CatchingSendableSyncProvider<Caught: SyncProvider & Sendable, Failure: Error>: SyncProvider, Sendable {
+    typealias Catcher = @Sendable (Caught.Failure, ID) throws(Failure) -> Caught.Value
+
+    var caught: Caught
+
+    var catcher: Catcher
+
+    func valueFor(id: Caught.ID) throws(Failure) -> Caught.Value {
+        do throws(Caught.Failure) {
+            return try caught.valueFor(id: id)
+        } catch {
+            return try catcher(error, id)
         }
+    }
+}
+
+public extension SyncProvider where Self: Sendable, ID: Sendable, Value: Sendable {
+    func `catch`<OtherFailure: Error>(
+        _ catcher: @Sendable @escaping (Failure, ID) throws(OtherFailure) -> Value
+    ) -> some SyncProvider<ID, Value, OtherFailure> & Sendable {
+        CatchingSendableSyncProvider(caught: self, catcher: catcher)
     }
 }
 
