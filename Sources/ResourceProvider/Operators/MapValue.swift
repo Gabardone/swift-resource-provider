@@ -64,9 +64,9 @@ public extension SyncProvider {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
-    func mapValue<OtherValue>(
-        _ transform: @escaping (Value, ID) throws(Failure) -> OtherValue
-    ) -> some SyncProvider<ID, OtherValue, Failure> {
+    func mapValue<OtherValue, OtherFailure: Error>(
+        _ transform: @escaping (Value, ID) throws(OtherFailure) -> OtherValue
+    ) -> some SyncProvider<ID, OtherValue, Failure> where OtherFailure == Failure {
         ValueMappingSameFailureSyncProvider(mapped: self, valueMapper: transform)
     }
 }
@@ -204,9 +204,9 @@ public extension SyncProvider where Self: Sendable {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
-    func mapValue<OtherValue>(
-        _ transform: @escaping @Sendable (Value, ID) throws(Failure) -> OtherValue
-    ) -> some SyncProvider<ID, OtherValue, Failure> & Sendable {
+    func mapValue<OtherValue, OtherFailure: Error>(
+        _ transform: @escaping @Sendable (Value, ID) throws(OtherFailure) -> OtherValue
+    ) -> some SyncProvider<ID, OtherValue, Failure> & Sendable where OtherFailure == Failure {
         ValueMappingSameFailureSendableSyncProvider(mapped: self, valueMapper: transform)
     }
 }

@@ -62,10 +62,9 @@ public extension SyncProvider {
      it wants.
      - Returns: A provider that has the given side effect when returning a value.
      */
-    @_disfavoredOverload
-    func sideEffect(
-        _ sideEffect: @escaping (Value, ID) throws(Failure) -> Void
-    ) -> some SyncProvider<ID, Value, Failure> {
+    func sideEffect<OtherFailure: Error>(
+        _ sideEffect: @escaping (Value, ID) throws(OtherFailure) -> Void
+    ) -> some SyncProvider<ID, Value, Failure> where OtherFailure == Failure {
         SideEffectedSameFailureSyncProvider(sideEffected: self, sideEffect: sideEffect)
     }
 }
@@ -94,7 +93,6 @@ public extension SyncProvider {
      it wants. If it throws, the provider throws.
      - Returns: A provider that has the given side effect when returning a value and may also `throw`.
      */
-    @_disfavoredOverload
     func sideEffect<OtherFailure: Error>(
         _ sideEffect: @escaping (Value, ID) throws(OtherFailure) -> Void
     ) -> some SyncProvider<ID, Value, any Error> {
@@ -193,9 +191,9 @@ public extension SyncProvider where Self: Sendable {
      it wants.
      - Returns: A provider that has the given side effect when returning a value.
      */
-    func sideEffect(
-        _ sideEffect: @escaping @Sendable (Value, ID) throws(Failure) -> Void
-    ) -> some SyncProvider<ID, Value, Failure> & Sendable {
+    func sideEffect<OtherFailure: Error>(
+        _ sideEffect: @escaping @Sendable (Value, ID) throws(OtherFailure) -> Void
+    ) -> some SyncProvider<ID, Value, Failure> & Sendable where OtherFailure == Failure {
         SideEffectedSameFailureSendableSyncProvider(sideEffected: self, sideEffect: sideEffect)
     }
 }
