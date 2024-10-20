@@ -48,6 +48,7 @@ public extension SyncCache where Self: Sendable, ID: Sendable, Value: Sendable {
      This is not particularly problematic for very fast caches i.e. in-memory ones. Normally you will be using a
      `Dictionary` or similar collection to keep your stored values around and those are both fast and do not play well
      with concurrency.
+     - Note: Value must be `Sendable` because of Swift 6.0 weirdness. Likely to be relaxed in Swift 6.1
      - Returns: An `async` cache version of the calling `SyncCache` that runs its calls serially.
      */
     func serialized() -> some AsyncCache<ID, Value> {

@@ -5,7 +5,7 @@
 //  Created by Óscar Morales Vivó on 10/19/24.
 //
 
-public struct AnySendableSyncProvider<ID: Hashable & Sendable, Value: Sendable, Failure: Error> {
+public struct AnySendableSyncProvider<ID: Hashable, Value, Failure: Error> {
     public typealias ValueForID = @Sendable (ID) throws(Failure) -> Value
 
     public var valueForID: ValueForID

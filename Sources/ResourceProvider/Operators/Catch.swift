@@ -58,7 +58,7 @@ private struct CatchingSendableSyncProvider<Caught: SyncProvider & Sendable, Fai
     }
 }
 
-public extension SyncProvider where Self: Sendable, ID: Sendable, Value: Sendable {
+public extension SyncProvider where Self: Sendable {
     func `catch`<OtherFailure: Error>(
         _ catcher: @Sendable @escaping (Failure, ID) throws(OtherFailure) -> Value
     ) -> some SyncProvider<ID, Value, OtherFailure> & Sendable {

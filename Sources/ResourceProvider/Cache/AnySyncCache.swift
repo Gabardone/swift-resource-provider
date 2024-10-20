@@ -11,7 +11,7 @@
  This wrapper value type can be (and is) used to build up adapters for actual cache types, and can also be used to
  build mocks for testing.
  */
-public struct AnySyncCache<ID: Hashable & Sendable, Value> {
+public struct AnySyncCache<ID: Hashable, Value> {
     /**
      A type erased cache has its functionality injected as blocks.
      - Parameters:

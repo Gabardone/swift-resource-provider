@@ -55,7 +55,7 @@ private struct IDMappingSendableSyncProvider<
     }
 }
 
-public extension SyncProvider where Self: Sendable, Value: Sendable {
+public extension SyncProvider where Self: Sendable {
     /**
      Maps an id type to the calling provider's id type.
 

@@ -13,7 +13,7 @@
  */
 public protocol SyncCache<ID, Value> {
     /// The id type that uniquely identifies cached values.
-    associatedtype ID: Hashable & Sendable
+    associatedtype ID: Hashable
 
     /// The type of value being cached.
     associatedtype Value
