@@ -24,11 +24,11 @@ public struct WeakObjectCache<ID: Hashable & Sendable, Value: AnyObject> {
 }
 
 extension WeakObjectCache: SyncCache {
-    public func valueFor(id: ID) -> Value? {
+    public func value(for id: ID) -> Value? {
         weakObjects.object(forKey: .init(wrapping: id))
     }
 
-    public func store(value: Value, id: ID) {
+    public func store(value: Value, for id: ID) {
         weakObjects.setObject(value, forKey: .init(wrapping: id))
     }
 }

@@ -29,7 +29,7 @@ public protocol AsyncCache<ID, Value>: Sendable {
      - Parameter id: The id whose potentially cached value we want.
      - Returns: The value for `id`, if currently stored in the cache, or `nil` if not.
      */
-    func valueFor(id: ID) async -> Value?
+    func value(for id: ID) async -> Value?
 
     /**
      Stores the given value in the cache.
@@ -40,7 +40,7 @@ public protocol AsyncCache<ID, Value>: Sendable {
        - value: The value to store.
        - id: ID associated with the value to store.
      */
-    func store(value: Value, id: ID) async
+    func store(value: Value, for id: ID) async
 
     /**
      Returns a type-erased version of the calling cache.
@@ -57,9 +57,9 @@ public protocol AsyncCache<ID, Value>: Sendable {
 public extension AsyncCache {
     func eraseToAnyCache() -> AnyAsyncCache<ID, Value> {
         AnyAsyncCache { id in
-            await valueFor(id: id)
+            await value(for: id)
         } storeValueForID: { value, id in
-            await store(value: value, id: id)
+            await store(value: value, for: id)
         }
     }
 }

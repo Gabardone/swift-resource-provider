@@ -16,8 +16,8 @@ private struct IDMappingSyncProvider<Mapped: SyncProvider, ID: Hashable>: SyncPr
 
     var idMapper: IDMapper
 
-    func valueFor(id: ID) throws(Mapped.Failure) -> Mapped.Value {
-        try mapped.valueFor(id: idMapper(id))
+    func value(for id: ID) throws(Mapped.Failure) -> Mapped.Value {
+        try mapped.value(for: idMapper(id))
     }
 }
 
@@ -50,8 +50,8 @@ private struct IDMappingSendableSyncProvider<
 
     var idMapper: IDMapper
 
-    func valueFor(id: ID) throws(Mapped.Failure) -> Mapped.Value {
-        try mapped.valueFor(id: idMapper(id))
+    func value(for id: ID) throws(Mapped.Failure) -> Mapped.Value {
+        try mapped.value(for: idMapper(id))
     }
 }
 

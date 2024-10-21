@@ -13,11 +13,11 @@ private actor SyncCacheSerializer<
     private let serialized: Serialized
 
     func serializedValueFor(id: ID) -> Value? {
-        serialized.valueFor(id: id)
+        serialized.value(for: id)
     }
 
-    func serializedStore(value: Value, id: ID) {
-        serialized.store(value: value, id: id)
+    func serializedStore(value: Value, for id: ID) {
+        serialized.store(value: value, for: id)
     }
 
     init(serializing cache: Serialized) {
@@ -27,13 +27,13 @@ private actor SyncCacheSerializer<
 
 extension SyncCacheSerializer: AsyncCache {
     nonisolated
-    func valueFor(id: ID) async -> Value? {
+    func value(for id: ID) async -> Value? {
         await serializedValueFor(id: id)
     }
 
     nonisolated
-    func store(value: Value, id: ID) async {
-        await serializedStore(value: value, id: id)
+    func store(value: Value, for id: ID) async {
+        await serializedStore(value: value, for: id)
     }
 }
 

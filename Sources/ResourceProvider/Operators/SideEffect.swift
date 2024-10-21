@@ -14,8 +14,8 @@ private struct SideEffectedNeverFailureSyncProvider<Effected: SyncProvider>: Syn
 
     var sideEffect: SideEffect
 
-    func valueFor(id: Effected.ID) throws(Effected.Failure) -> Effected.Value {
-        let result = try sideEffected.valueFor(id: id)
+    func value(for id: Effected.ID) throws(Effected.Failure) -> Effected.Value {
+        let result = try sideEffected.value(for: id)
         sideEffect(result, id)
         return result
     }
@@ -45,8 +45,8 @@ private struct SideEffectedSameFailureSyncProvider<Effected: SyncProvider>: Sync
 
     var sideEffect: SideEffect
 
-    func valueFor(id: Effected.ID) throws(Effected.Failure) -> Effected.Value {
-        let result = try sideEffected.valueFor(id: id)
+    func value(for id: Effected.ID) throws(Effected.Failure) -> Effected.Value {
+        let result = try sideEffected.value(for: id)
         try sideEffect(result, id)
         return result
     }
@@ -76,8 +76,8 @@ private struct SideEffectedAnyFailureSyncProvider<Effected: SyncProvider, SideEf
 
     var sideEffect: SideEffect
 
-    func valueFor(id: Effected.ID) throws -> Effected.Value {
-        let result = try sideEffected.valueFor(id: id)
+    func value(for id: Effected.ID) throws -> Effected.Value {
+        let result = try sideEffected.value(for: id)
         try sideEffect(result, id)
         return result
     }
@@ -110,8 +110,8 @@ private struct SideEffectedNewFailureSyncProvider<
 
     var sideEffect: SideEffect
 
-    func valueFor(id: Effected.ID) throws(SideEffectError) -> Effected.Value {
-        let result = sideEffected.valueFor(id: id)
+    func value(for id: Effected.ID) throws(SideEffectError) -> Effected.Value {
+        let result = sideEffected.value(for: id)
         try sideEffect(result, id)
         return result
     }
@@ -143,8 +143,8 @@ private struct SideEffectedNeverFailureSendableSyncProvider<Effected: SyncProvid
 
     var sideEffect: SideEffect
 
-    func valueFor(id: Effected.ID) throws(Effected.Failure) -> Effected.Value {
-        let result = try sideEffected.valueFor(id: id)
+    func value(for id: Effected.ID) throws(Effected.Failure) -> Effected.Value {
+        let result = try sideEffected.value(for: id)
         sideEffect(result, id)
         return result
     }
@@ -174,8 +174,8 @@ private struct SideEffectedSameFailureSendableSyncProvider<Effected: SyncProvide
 
     var sideEffect: SideEffect
 
-    func valueFor(id: Effected.ID) throws(Effected.Failure) -> Effected.Value {
-        let result = try sideEffected.valueFor(id: id)
+    func value(for id: Effected.ID) throws(Effected.Failure) -> Effected.Value {
+        let result = try sideEffected.value(for: id)
         try sideEffect(result, id)
         return result
     }
@@ -208,8 +208,8 @@ private struct SideEffectedAnyFailureSendableSyncProvider<
 
     var sideEffect: SideEffect
 
-    func valueFor(id: Effected.ID) throws -> Effected.Value {
-        let result = try sideEffected.valueFor(id: id)
+    func value(for id: Effected.ID) throws -> Effected.Value {
+        let result = try sideEffected.value(for: id)
         try sideEffect(result, id)
         return result
     }
@@ -242,8 +242,8 @@ private struct SideEffectedNewFailureSendableSyncProvider<
 
     var sideEffect: SideEffect
 
-    func valueFor(id: Effected.ID) throws(SideEffectError) -> Effected.Value {
-        let result = sideEffected.valueFor(id: id)
+    func value(for id: Effected.ID) throws(SideEffectError) -> Effected.Value {
+        let result = sideEffected.value(for: id)
         try sideEffect(result, id)
         return result
     }

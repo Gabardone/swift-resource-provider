@@ -12,7 +12,7 @@ public protocol SyncProvider<ID, Value, Failure> {
 
     associatedtype Failure: Error
 
-    func valueFor(id: ID) throws(Failure) -> Value
+    func value(for id: ID) throws(Failure) -> Value
 }
 
 public extension Provider {

@@ -16,8 +16,8 @@ private struct ValueMappingNeverFailureSyncProvider<Mapped: SyncProvider, Value>
 
     var valueMapper: ValueMapper
 
-    func valueFor(id: Mapped.ID) throws(Mapped.Failure) -> Value {
-        try valueMapper(mapped.valueFor(id: id), id)
+    func value(for id: Mapped.ID) throws(Mapped.Failure) -> Value {
+        try valueMapper(mapped.value(for: id), id)
     }
 }
 
@@ -47,8 +47,8 @@ private struct ValueMappingSameFailureSyncProvider<Mapped: SyncProvider, Value>:
 
     var valueMapper: ValueMapper
 
-    func valueFor(id: Mapped.ID) throws(Mapped.Failure) -> Value {
-        try valueMapper(mapped.valueFor(id: id), id)
+    func value(for id: Mapped.ID) throws(Mapped.Failure) -> Value {
+        try valueMapper(mapped.value(for: id), id)
     }
 }
 
@@ -78,8 +78,8 @@ private struct ValueMappingAnyFailureSyncProvider<Mapped: SyncProvider, Value, V
 
     var valueMapper: ValueMapper
 
-    func valueFor(id: Mapped.ID) throws -> Value {
-        try valueMapper(mapped.valueFor(id: id), id)
+    func value(for id: Mapped.ID) throws -> Value {
+        try valueMapper(mapped.value(for: id), id)
     }
 }
 
@@ -115,8 +115,8 @@ private struct ValueMappingNewFailureSyncProvider<
 
     var valueMapper: ValueMapper
 
-    func valueFor(id: Mapped.ID) throws(ValueMappingError) -> Value {
-        try valueMapper(mapped.valueFor(id: id), id)
+    func value(for id: Mapped.ID) throws(ValueMappingError) -> Value {
+        try valueMapper(mapped.value(for: id), id)
     }
 }
 
@@ -153,8 +153,8 @@ private struct ValueMappingNeverFailureSendableSyncProvider<
 
     var valueMapper: ValueMapper
 
-    func valueFor(id: Mapped.ID) throws(Mapped.Failure) -> Value {
-        try valueMapper(mapped.valueFor(id: id), id)
+    func value(for id: Mapped.ID) throws(Mapped.Failure) -> Value {
+        try valueMapper(mapped.value(for: id), id)
     }
 }
 
@@ -187,8 +187,8 @@ private struct ValueMappingSameFailureSendableSyncProvider<
 
     var valueMapper: ValueMapper
 
-    func valueFor(id: Mapped.ID) throws(Mapped.Failure) -> Value {
-        try valueMapper(mapped.valueFor(id: id), id)
+    func value(for id: Mapped.ID) throws(Mapped.Failure) -> Value {
+        try valueMapper(mapped.value(for: id), id)
     }
 }
 
@@ -222,8 +222,8 @@ private struct ValueMappingAnyFailureSendableSyncProvider<
 
     var valueMapper: ValueMapper
 
-    func valueFor(id: Mapped.ID) throws -> Value {
-        try valueMapper(mapped.valueFor(id: id), id)
+    func value(for id: Mapped.ID) throws -> Value {
+        try valueMapper(mapped.value(for: id), id)
     }
 }
 
@@ -259,8 +259,8 @@ private struct ValueMappingNewFailureSendableSyncProvider<
 
     var valueMapper: ValueMapper
 
-    func valueFor(id: Mapped.ID) throws(ValueMappingError) -> Value {
-        try valueMapper(mapped.valueFor(id: id), id)
+    func value(for id: Mapped.ID) throws(ValueMappingError) -> Value {
+        try valueMapper(mapped.value(for: id), id)
     }
 }
 

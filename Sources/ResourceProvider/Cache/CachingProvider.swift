@@ -16,10 +16,10 @@ public extension SyncProvider {
      */
     func cache(_ cache: some SyncCache<ID, Value>) -> some SyncProvider<ID, Value, Failure> {
         sideEffect { value, id in
-            cache.store(value: value, id: id)
+            cache.store(value: value, for: id)
         }
         .interject { id in
-            cache.valueFor(id: id)
+            cache.value(for: id)
         }
     }
 }
@@ -31,10 +31,10 @@ public extension AsyncProvider {
      */
     func cache(_ cache: some AsyncCache<ID, Value>) -> some AsyncProvider<ID, Value, Failure> {
         sideEffect { value, id in
-            await cache.store(value: value, id: id)
+            await cache.store(value: value, for: id)
         }
         .interject { id in
-            await cache.valueFor(id: id)
+            await cache.value(for: id)
         }
     }
 }

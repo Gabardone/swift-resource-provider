@@ -14,9 +14,9 @@ private struct CatchingSyncProvider<Caught: SyncProvider, Failure: Error>: SyncP
 
     var catcher: Catcher
 
-    func valueFor(id: Caught.ID) throws(Failure) -> Caught.Value {
+    func value(for id: Caught.ID) throws(Failure) -> Caught.Value {
         do throws(Caught.Failure) {
-            return try caught.valueFor(id: id)
+            return try caught.value(for: id)
         } catch {
             return try catcher(error, id)
         }
@@ -49,9 +49,9 @@ private struct CatchingSendableSyncProvider<Caught: SyncProvider & Sendable, Fai
 
     var catcher: Catcher
 
-    func valueFor(id: Caught.ID) throws(Failure) -> Caught.Value {
+    func value(for id: Caught.ID) throws(Failure) -> Caught.Value {
         do throws(Caught.Failure) {
-            return try caught.valueFor(id: id)
+            return try caught.value(for: id)
         } catch {
             return try catcher(error, id)
         }

@@ -21,7 +21,7 @@ class TestCache<ID: Hashable, Value> {
 }
 
 extension TestCache: AsyncCache {
-    func valueFor(id: ID) async -> Value? {
+    func value(for id: ID) async -> Value? {
         await valueForID(id)
     }
 
@@ -36,12 +36,12 @@ extension SyncCache {
         storeValidation: ((ID, Value) -> Void)? = nil
     ) -> some SyncCache<ID, Value> {
         AnySyncCache { id in
-            let result = valueFor(id: id)
+            let result = value(for: id)
             fetchValidation?(id, result)
             return result
         } storeValueForID: { value, id in
             storeValidation?(id, value)
-            store(value: value, id: id)
+            store(value: value, for: id)
         }
     }
 }
@@ -52,12 +52,12 @@ extension AsyncCache {
         storeValidation: ((ID, Value) -> Void)? = nil
     ) -> some AsyncCache<ID, Value> {
         AnyAsyncCache { id in
-            let result = await valueFor(id: id)
+            let result = await value(for: id)
             fetchValidation?(id, result)
             return result
         } storeValueForID: { value, id in
             storeValidation?(id, value)
-            await store(value: value, id: id)
+            await store(value: value, for: id)
         }
     }
 }

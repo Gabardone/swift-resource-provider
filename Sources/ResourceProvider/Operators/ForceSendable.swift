@@ -10,8 +10,8 @@ private struct UncheckedSendableSyncProvider<
 >: SyncProvider, @unchecked Sendable {
     var wrappedProvider: P
 
-    func valueFor(id: P.ID) throws(P.Failure) -> P.Value {
-        try wrappedProvider.valueFor(id: id)
+    func value(for id: P.ID) throws(P.Failure) -> P.Value {
+        try wrappedProvider.value(for: id)
     }
 }
 

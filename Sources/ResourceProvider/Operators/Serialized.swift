@@ -15,7 +15,7 @@ private actor SyncProviderSerializer<
     }
 
     fileprivate func serializedValue(for id: Provider.ID) throws(Provider.Failure) -> Provider.Value {
-        try serializedProvider.valueFor(id: id)
+        try serializedProvider.value(for: id)
     }
 }
 

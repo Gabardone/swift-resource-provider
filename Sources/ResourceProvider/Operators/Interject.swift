@@ -14,11 +14,11 @@ private struct InterjectingNeverFailureSyncProvider<Interjected: SyncProvider>: 
 
     var interjector: Interjector
 
-    func valueFor(id: Interjected.ID) throws(Interjected.Failure) -> Interjected.Value {
+    func value(for id: Interjected.ID) throws(Interjected.Failure) -> Interjected.Value {
         if let interjection = interjector(id) {
             interjection
         } else {
-            try interjected.valueFor(id: id)
+            try interjected.value(for: id)
         }
     }
 }
@@ -46,11 +46,11 @@ private struct InterjectingSameFailureSyncProvider<Interjected: SyncProvider>: S
 
     var interjector: Interjector
 
-    func valueFor(id: Interjected.ID) throws(Interjected.Failure) -> Interjected.Value {
+    func value(for id: Interjected.ID) throws(Interjected.Failure) -> Interjected.Value {
         if let interjection = try interjector(id) {
             interjection
         } else {
-            try interjected.valueFor(id: id)
+            try interjected.value(for: id)
         }
     }
 }
@@ -80,11 +80,11 @@ private struct InterjectingAnyFailureSyncProvider<Interjected: SyncProvider, Int
 
     var interjector: Interjector
 
-    func valueFor(id: Interjected.ID) throws(any Error) -> Interjected.Value {
+    func value(for id: Interjected.ID) throws(any Error) -> Interjected.Value {
         if let interjection = try interjector(id) {
             interjection
         } else {
-            try interjected.valueFor(id: id)
+            try interjected.value(for: id)
         }
     }
 }
@@ -117,11 +117,11 @@ private struct InterjectingNewFailureSyncProvider<
 
     var interjector: Interjector
 
-    func valueFor(id: Interjected.ID) throws(InterjectionError) -> Interjected.Value {
+    func value(for id: Interjected.ID) throws(InterjectionError) -> Interjected.Value {
         if let interjection = try interjector(id) {
             interjection
         } else {
-            interjected.valueFor(id: id)
+            interjected.value(for: id)
         }
     }
 }
@@ -155,11 +155,11 @@ private struct InterjectingNoFailureSendableSyncProvider<
 
     var interjector: Interjector
 
-    func valueFor(id: Interjected.ID) throws(Interjected.Failure) -> Interjected.Value {
+    func value(for id: Interjected.ID) throws(Interjected.Failure) -> Interjected.Value {
         if let interjection = interjector(id) {
             interjection
         } else {
-            try interjected.valueFor(id: id)
+            try interjected.value(for: id)
         }
     }
 }
@@ -191,11 +191,11 @@ private struct InterjectingSameFailureSendableSyncProvider<
 
     var interjector: Interjector
 
-    func valueFor(id: Interjected.ID) throws(Interjected.Failure) -> Interjected.Value {
+    func value(for id: Interjected.ID) throws(Interjected.Failure) -> Interjected.Value {
         if let interjection = try interjector(id) {
             interjection
         } else {
-            try interjected.valueFor(id: id)
+            try interjected.value(for: id)
         }
     }
 }
@@ -228,11 +228,11 @@ private struct InterjectingAnyFailureSendableSyncProvider<
 
     var interjector: Interjector
 
-    func valueFor(id: Interjected.ID) throws(any Error) -> Interjected.Value {
+    func value(for id: Interjected.ID) throws(any Error) -> Interjected.Value {
         if let interjection = try interjector(id) {
             interjection
         } else {
-            try interjected.valueFor(id: id)
+            try interjected.value(for: id)
         }
     }
 }
@@ -265,11 +265,11 @@ private struct InterjectingNewFailureSendableSyncProvider<
 
     var interjector: Interjector
 
-    func valueFor(id: Interjected.ID) throws(InterjectionError) -> Interjected.Value {
+    func value(for id: Interjected.ID) throws(InterjectionError) -> Interjected.Value {
         if let interjection = try interjector(id) {
             interjection
         } else {
-            interjected.valueFor(id: id)
+            interjected.value(for: id)
         }
     }
 }

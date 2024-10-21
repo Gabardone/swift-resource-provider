@@ -25,12 +25,12 @@ public extension SyncCache {
         fromStorage: @escaping (Value, ID) -> OtherValue?
     ) -> some SyncCache<ID, OtherValue> {
         AnySyncCache { id in
-            valueFor(id: id).flatMap { value in
+            value(for: id).flatMap { value in
                 fromStorage(value, id)
             }
         } storeValueForID: { value, id in
             if let cacheValue = toStorage(value) {
-                store(value: cacheValue, id: id)
+                store(value: cacheValue, for: id)
             }
         }
     }
@@ -56,14 +56,14 @@ public extension SyncCache where Self: Sendable, ID: Sendable {
         fromStorage: @escaping @Sendable (Value, ID) async -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
         AnyAsyncCache { id in
-            if let storedValue = valueFor(id: id) {
+            if let storedValue = value(for: id) {
                 await fromStorage(storedValue, id)
             } else {
                 nil
             }
         } storeValueForID: { value, id in
             if let cacheValue = await toStorage(value) {
-                store(value: cacheValue, id: id)
+                store(value: cacheValue, for: id)
             }
         }
     }
@@ -89,12 +89,12 @@ public extension AsyncCache {
         fromStorage: @escaping @Sendable (Value, ID) -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
         AnyAsyncCache { id in
-            await valueFor(id: id).flatMap { storedValue in
+            await value(for: id).flatMap { storedValue in
                 fromStorage(storedValue, id)
             }
         } storeValueForID: { value, id in
             if let cacheValue = toStorage(value) {
-                await store(value: cacheValue, id: id)
+                await store(value: cacheValue, for: id)
             }
         }
     }
@@ -118,14 +118,14 @@ public extension AsyncCache {
         fromStorage: @escaping @Sendable (Value, ID) async -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
         AnyAsyncCache { id in
-            if let storedValue = await valueFor(id: id) {
+            if let storedValue = await value(for: id) {
                 await fromStorage(storedValue, id)
             } else {
                 nil
             }
         } storeValueForID: { value, id in
             if let cacheValue = await toStorage(value) {
-                await store(value: cacheValue, id: id)
+                await store(value: cacheValue, for: id)
             }
         }
     }

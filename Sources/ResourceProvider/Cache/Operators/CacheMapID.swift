@@ -17,9 +17,9 @@ public extension SyncCache {
      */
     func mapID<OtherID: Hashable & Sendable>(_ transform: @escaping (OtherID) -> ID) -> some SyncCache<OtherID, Value> {
         AnySyncCache { id in
-            valueFor(id: transform(id))
+            value(for: transform(id))
         } storeValueForID: { value, id in
-            store(value: value, id: transform(id))
+            store(value: value, for: transform(id))
         }
     }
 }
@@ -38,9 +38,9 @@ public extension AsyncCache {
         _ transform: @escaping @Sendable (OtherID) -> ID
     ) -> some AsyncCache<OtherID, Value> {
         AnyAsyncCache { id in
-            await valueFor(id: transform(id))
+            await value(for: transform(id))
         } storeValueForID: { value, id in
-            await store(value: value, id: transform(id))
+            await store(value: value, for: transform(id))
         }
     }
 }

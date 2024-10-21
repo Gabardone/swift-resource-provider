@@ -9,7 +9,7 @@ private struct ConcurrentSyncProvider<P: SyncProvider & Sendable>: AsyncProvider
     let syncProvider: P
 
     func value(for id: P.ID) async throws(P.Failure) -> P.Value {
-        try syncProvider.valueFor(id: id)
+        try syncProvider.value(for: id)
     }
 }
 
