@@ -28,6 +28,8 @@ public protocol AsyncProvider<ID, Value, Failure>: Sendable {
      - Returns: The value for the given `ID`
      */
     func value(for id: ID) async throws(Failure) -> Value
+
+    func eraseToAnyAsyncProvider() -> AnyAsyncProvider<ID, Value, Failure>
 }
 
 public extension Provider {
@@ -40,5 +42,11 @@ public extension Provider {
         _ source: @escaping @Sendable (ID) async throws(Failure) -> Value
     ) -> some AsyncProvider<ID, Value, Failure> {
         AnyAsyncProvider(valueForID: source)
+    }
+}
+
+public extension AsyncProvider {
+    func eraseToAnyAsyncProvider() -> AnyAsyncProvider<ID, Value, Failure> {
+        AnyAsyncProvider(valueForID: self.value(for:))
     }
 }

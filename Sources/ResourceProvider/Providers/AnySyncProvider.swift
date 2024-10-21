@@ -19,12 +19,8 @@ extension AnySyncProvider: SyncProvider {
     public func value(for id: ID) throws(Failure) -> Value {
         try valueForID(id)
     }
-}
 
-extension SyncProvider {
-    func eraseToAnySyncProvider() -> AnySyncProvider<ID, Value, Failure> {
-        AnySyncProvider { id throws(Failure) in
-            try self.value(for: id)
-        }
+    public func eraseToAnySyncProvider() -> AnySyncProvider<ID, Value, Failure> {
+        self
     }
 }

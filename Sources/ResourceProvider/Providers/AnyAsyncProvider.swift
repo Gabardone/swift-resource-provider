@@ -19,13 +19,8 @@ extension AnyAsyncProvider: AsyncProvider {
     public func value(for id: ID) async throws(Failure) -> Value {
         try await valueForID(id)
     }
-}
 
-extension AsyncProvider {
-    func eraseToAnyAsyncProvider() -> AnyAsyncProvider<ID, Value, Failure> {
-        AnyAsyncProvider { id throws(Failure) in
-            try await self.value(for: id)
-        }
+    public func eraseToAnyAsyncProvider() -> AnyAsyncProvider<ID, Value, Failure> {
+        self
     }
 }
-

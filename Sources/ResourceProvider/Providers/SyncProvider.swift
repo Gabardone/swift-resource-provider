@@ -13,6 +13,14 @@ public protocol SyncProvider<ID, Value, Failure> {
     associatedtype Failure: Error
 
     func value(for id: ID) throws(Failure) -> Value
+
+    func eraseToAnySyncProvider() -> AnySyncProvider<ID, Value, Failure>
+}
+
+public extension SyncProvider {
+    func eraseToAnySyncProvider() -> AnySyncProvider<ID, Value, Failure> {
+        .init(valueForID: self.value(for:))
+    }
 }
 
 public extension Provider {
