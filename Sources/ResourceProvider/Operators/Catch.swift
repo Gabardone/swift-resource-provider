@@ -60,13 +60,29 @@ private struct CatchingSendableSyncProvider<Caught: SyncProvider & Sendable, Fai
 
 public extension SyncProvider where Self: Sendable {
     func `catch`<OtherFailure: Error>(
-        _ catcher: @Sendable @escaping (Failure, ID) throws(OtherFailure) -> Value
+        _ catcher: @escaping @Sendable (Failure, ID) throws(OtherFailure) -> Value
     ) -> some SyncProvider<ID, Value, OtherFailure> & Sendable {
         CatchingSendableSyncProvider(caught: self, catcher: catcher)
     }
 }
 
 // MARK: - AsyncProvider Catching
+
+private struct SyncCatchingAsyncProvider<Caught: AsyncProvider, Failure: Error>: AsyncProvider {
+    typealias Catcher = @Sendable (Caught.Failure, ID) throws(Failure) -> Caught.Value
+
+    var caught: Caught
+
+    var catcher: Catcher
+
+    func value(for id: Caught.ID) async throws(Failure) -> Caught.Value {
+        do throws(Caught.Failure) {
+            return try await caught.value(for: id)
+        } catch {
+            return try catcher(error, id)
+        }
+    }
+}
 
 public extension AsyncProvider {
     /**
@@ -79,17 +95,29 @@ public extension AsyncProvider {
      - Returns: An async provider that catches the exceptions thrown by the caller.
      */
     func `catch`<OtherFailure: Error>(
-        _ catcher: @Sendable @escaping (Failure, ID) throws(OtherFailure) -> Value
-    ) -> AsyncProvider<ID, Value, OtherFailure> {
-        AsyncProvider<ID, Value, OtherFailure> { id throws(OtherFailure) in
-            do throws(Failure) {
-                return try await valueForID(id)
-            } catch {
-                return try catcher(error, id)
-            }
+        _ catcher: @escaping @Sendable (Failure, ID) throws(OtherFailure) -> Value
+    ) -> some AsyncProvider<ID, Value, OtherFailure> {
+        SyncCatchingAsyncProvider(caught: self, catcher: catcher)
+    }
+}
+
+private struct AsyncCatchingAsyncProvider<Caught: AsyncProvider, Failure: Error>: AsyncProvider {
+    typealias Catcher = @Sendable (Caught.Failure, ID) async throws(Failure) -> Caught.Value
+
+    var caught: Caught
+
+    var catcher: Catcher
+
+    func value(for id: Caught.ID) async throws(Failure) -> Caught.Value {
+        do throws(Caught.Failure) {
+            return try await caught.value(for: id)
+        } catch {
+            return try await catcher(error, id)
         }
     }
+}
 
+public extension AsyncProvider {
     /**
      Builds a provider that catches the exceptions thrown by the calling one.
 
@@ -100,14 +128,8 @@ public extension AsyncProvider {
      - Returns: An async provider that catches the exceptions thrown by the caller.
      */
     func `catch`<OtherFailure: Error>(
-        _ catcher: @Sendable @escaping (Failure, ID) async throws(OtherFailure) -> Value
-    ) -> AsyncProvider<ID, Value, OtherFailure> {
-        .init { id throws(OtherFailure) in
-            do throws(Failure) {
-                return try await valueForID(id)
-            } catch {
-                return try await catcher(error, id)
-            }
-        }
+        _ catcher: @escaping @Sendable (Failure, ID) async throws(OtherFailure) -> Value
+    ) -> some AsyncProvider<ID, Value, OtherFailure> {
+        AsyncCatchingAsyncProvider(caught: self, catcher: catcher)
     }
 }

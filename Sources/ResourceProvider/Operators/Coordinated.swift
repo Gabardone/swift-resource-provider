@@ -7,21 +7,25 @@
 
 import Foundation
 
-private actor AsyncProviderCoordinator<ID: Hashable & Sendable, Value: Sendable> {
-    typealias Parent = AsyncProvider<ID, Value, Never>
+private actor AsyncProviderCoordinator<
+    Coordinated: AsyncProvider
+> where Coordinated.Failure == Never, Coordinated.ID: Sendable, Coordinated.Value: Sendable {
+    typealias ID = Coordinated.ID
 
-    init(parent: Parent) {
-        self.parent = parent
+    typealias Value = Coordinated.Value
+
+    init(coordinated: Coordinated) {
+        self.coordinated = coordinated
     }
 
-    let parent: Parent
+    let coordinated: Coordinated
 
     var taskManager = [ID: Task<Value, Never>]()
 
     fileprivate func taskFor(id: ID) -> Task<Value, Never> {
         taskManager[id] ?? {
             let newTask = Task {
-                let result = await parent.valueForID(id)
+                let result = await coordinated.value(for: id)
                 taskManager.removeValue(forKey: id)
                 return result
             }
@@ -30,21 +34,27 @@ private actor AsyncProviderCoordinator<ID: Hashable & Sendable, Value: Sendable>
             return newTask
         }()
     }
+}
 
-    // Helper to bridge actor isolation.
-    fileprivate nonisolated func valueFor(id: ID) async -> Value {
-        return await taskFor(id: id).value
+extension AsyncProviderCoordinator: AsyncProvider {
+    nonisolated
+    func value(for id: Coordinated.ID) async -> Coordinated.Value {
+        await taskFor(id: id).value
     }
 }
 
-private actor ThrowingAsyncProviderCoordinator<ID: Hashable & Sendable, Value: Sendable, Failure: Error> {
-    typealias Parent = AsyncProvider<ID, Value, Failure>
+private actor ThrowingAsyncProviderCoordinator<
+    Coordinated: AsyncProvider
+> where Coordinated.ID: Sendable, Coordinated.Value: Sendable {
+    typealias ID = Coordinated.ID
 
-    init(parent: Parent) {
-        self.parent = parent
+    typealias Value = Coordinated.Value
+
+    init(coordinated: Coordinated) {
+        self.coordinated = coordinated
     }
 
-    let parent: Parent
+    let coordinated: Coordinated
 
     var taskManager = [ID: Task<Value, any Error>]()
 
@@ -55,21 +65,25 @@ private actor ThrowingAsyncProviderCoordinator<ID: Hashable & Sendable, Value: S
                     self.taskManager.removeValue(forKey: id)
                 }
 
-                return try await parent.valueForID(id)
+                return try await coordinated.value(for: id)
             }
 
             taskManager[id] = newTask
             return newTask
         }()
     }
+}
 
-    // Helper to bridge actor isolation.
-    fileprivate nonisolated func valueFor(id: ID) async throws -> Value {
+extension ThrowingAsyncProviderCoordinator: AsyncProvider {
+    typealias Failure = any Error // Cannot do better with `Task`
+
+    nonisolated
+    func value(for id: Coordinated.ID) async throws -> Coordinated.Value {
         return try await taskFor(id: id).value
     }
 }
 
-public extension AsyncProvider where Failure == Never {
+public extension AsyncProvider where Failure == Never, ID: Sendable, Value: Sendable {
     /**
      Ensures that the provider will not do the same work twice when the same id is requested concurrently.
 
@@ -77,16 +91,12 @@ public extension AsyncProvider where Failure == Never {
      off an asynchronous provider with this modifier. If handling a synchronous one, use `serialized` instead.
      - Returns: A provider that ensures that multiple overlapping requests for the same `id` use the same task.
      */
-    func coordinated() -> Self {
-        let coordinator = AsyncProviderCoordinator(parent: self)
-
-        return .init { id in
-            await coordinator.valueFor(id: id)
-        }
+    func coordinated() -> some AsyncProvider<ID, Value, Never> {
+        AsyncProviderCoordinator(coordinated: self)
     }
 }
 
-public extension AsyncProvider {
+public extension AsyncProvider where ID: Sendable, Value: Sendable{
     /**
      Ensures that the provider will not do the same work twice when the same id is requested concurrently.
 
@@ -95,11 +105,7 @@ public extension AsyncProvider {
      - TODO: Mention that we're losing typed errors because of `Task` library limitations.
      - Returns: A provider that ensures that multiple overlapping requests for the same `id` use the same task.
      */
-    func coordinated() -> AsyncProvider<ID, Value, any Error> {
-        let coordinator = ThrowingAsyncProviderCoordinator(parent: self)
-
-        return .init { id in
-            try await coordinator.valueFor(id: id)
-        }
+    func coordinated() -> some AsyncProvider<ID, Value, any Error> {
+        ThrowingAsyncProviderCoordinator(coordinated: self)
     }
 }

@@ -5,15 +5,24 @@
 //  Created by Óscar Morales Vivó on 10/3/24.
 //
 
-private actor SyncProviderSerializer<Provider: SyncProvider & Sendable> {
+private actor SyncProviderSerializer<
+    Provider: SyncProvider & Sendable
+> where Provider.ID: Sendable, Provider.Value: Sendable {
     let serializedProvider: Provider
 
     init(serializing provider: Provider) {
         self.serializedProvider = provider
     }
 
-    func valueFor(id: Provider.ID) throws(Provider.Failure) -> Provider.Value {
+    fileprivate func serializedValue(for id: Provider.ID) throws(Provider.Failure) -> Provider.Value {
         try serializedProvider.valueFor(id: id)
+    }
+}
+
+extension SyncProviderSerializer: AsyncProvider {
+    nonisolated
+    func value(for id: Provider.ID) async throws(Provider.Failure) -> Provider.Value {
+        try await serializedValue(for: id)
     }
 }
 
@@ -28,11 +37,7 @@ public extension SyncProvider where Self: Sendable, ID: Sendable, Value: Sendabl
      - TODO: Talk about IKWID for making valueForID functionally `@Sendable`
      - Returns: An `async` provider version of the calling `SyncProvider` that runs its calls serially.
      */
-    func serialized() -> AsyncProvider<ID, Value, Failure> {
-        let serializedProvider = SyncProviderSerializer(serializing: self)
-
-        return AsyncProvider { id throws(Failure) in
-            try await serializedProvider.valueFor(id: id)
-        }
+    func serialized() -> some AsyncProvider<ID, Value, Failure> {
+        SyncProviderSerializer(serializing: self)
     }
 }

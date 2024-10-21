@@ -5,7 +5,15 @@
 //  Created by Óscar Morales Vivó on 10/19/24.
 //
 
-public extension SyncProvider where Self: Sendable, ID: Sendable, Value: Sendable {
+private struct ConcurrentSyncProvider<P: SyncProvider & Sendable>: AsyncProvider {
+    let syncProvider: P
+
+    func value(for id: P.ID) async throws(P.Failure) -> P.Value {
+        try syncProvider.valueFor(id: id)
+    }
+}
+
+public extension SyncProvider where Self: Sendable {
     /**
      Returns a wrapper for a sync provider that guarantees serialization.
 
@@ -16,9 +24,7 @@ public extension SyncProvider where Self: Sendable, ID: Sendable, Value: Sendabl
      - TODO: Talk about IKWID for making valueForID functionally `@Sendable`
      - Returns: An `async` provider version of the calling `SyncProvider` that runs its calls serially.
      */
-    func concurrent() -> AsyncProvider<ID, Value, Failure> {
-        return AsyncProvider { id throws(Failure) in
-            try valueFor(id: id)
-        }
+    func concurrent() -> some AsyncProvider<ID, Value, Failure> {
+        ConcurrentSyncProvider(syncProvider: self)
     }
 }

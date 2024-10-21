@@ -74,6 +74,21 @@ public extension SyncProvider where Self: Sendable {
 
 // MARK: - AsyncProvider Map ID
 
+private struct IDMappingAsyncProvider<
+    Mapped: AsyncProvider,
+    ID: Hashable
+>: AsyncProvider {
+    typealias IDMapper = @Sendable (ID) -> Mapped.ID
+
+    var mapped: Mapped
+
+    var idMapper: IDMapper
+
+    func value(for id: ID) async throws(Mapped.Failure) -> Mapped.Value {
+        try await mapped.value(for: idMapper(id))
+    }
+}
+
 public extension AsyncProvider {
     /**
      Maps an id type to the calling provider's id type.
@@ -85,10 +100,8 @@ public extension AsyncProvider {
      - Returns: A provider that takes `OtherID` as its `ID` type.
      */
     func mapID<OtherID: Hashable>(
-        _ transform: @Sendable @escaping (OtherID) -> ID
-    ) -> AsyncProvider<OtherID, Value, Failure> {
-        .init { otherID throws(Failure) in
-            try await valueForID(transform(otherID))
-        }
+        _ transform: @escaping @Sendable (OtherID) -> ID
+    ) -> some AsyncProvider<OtherID, Value, Failure> {
+        IDMappingAsyncProvider(mapped: self, idMapper: transform)
     }
 }

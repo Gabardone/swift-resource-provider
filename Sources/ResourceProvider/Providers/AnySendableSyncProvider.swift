@@ -22,3 +22,11 @@ extension AnySendableSyncProvider: SyncProvider {
 }
 
 extension AnySendableSyncProvider: Sendable {}
+
+extension SyncProvider where Self: Sendable {
+    func eraseToAnySyncProvider() -> AnySendableSyncProvider<ID, Value, Failure> {
+        AnySendableSyncProvider { id throws(Failure) in
+            try self.valueFor(id: id)
+        }
+    }
+}

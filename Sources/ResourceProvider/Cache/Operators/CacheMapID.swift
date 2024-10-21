@@ -35,7 +35,7 @@ public extension AsyncCache {
      - Returns: A cache that takes `OtherID` as its `ID` type.
      */
     func mapID<OtherID: Hashable & Sendable>(
-        _ transform: @Sendable @escaping (OtherID) -> ID
+        _ transform: @escaping @Sendable (OtherID) -> ID
     ) -> some AsyncCache<OtherID, Value> {
         AnyAsyncCache { id in
             await valueFor(id: transform(id))
