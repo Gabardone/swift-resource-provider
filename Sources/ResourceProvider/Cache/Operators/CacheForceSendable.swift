@@ -1,21 +1,23 @@
 //
-//  ForceSendable.swift
+//  CacheForceSendable.swift
 //  swift-resource-provider
 //
-//  Created by Óscar Morales Vivó on 10/18/24.
+//  Created by Óscar Morales Vivó on 10/21/24.
 //
 
-private struct UncheckedSendableSyncProvider<
-    P: SyncProvider
->: SendableSyncProvider, @unchecked Sendable {
-    var syncProvider: P
+private struct UncheckedSendableSyncCache<C: SyncCache>: SendableSyncCache, @unchecked Sendable {
+    var syncCache: C
 
-    func value(for id: P.ID) throws(P.Failure) -> P.Value {
-        try syncProvider.value(for: id)
+    func value(for id: C.ID) -> C.Value? {
+        syncCache.value(for: id)
+    }
+
+    func store(value: Value, for id: ID) {
+        syncCache.store(value: value, for: id)
     }
 }
 
-extension SyncProvider {
+extension SyncCache {
     /**
      Forces a non-sendable sync provider into being `Sendable`. Use at your own risk.
 
@@ -27,19 +29,19 @@ extension SyncProvider {
      involves `@unchecked Sendable` wrappers that's on you, the developer—.
      - Returns: An IKWID `SyncProvider` that has the exact same behavior as the caller but
      */
-    func forceSendable() -> some SendableSyncProvider<ID, Value, Failure> {
-        UncheckedSendableSyncProvider(syncProvider: self)
+    func forceSendable() -> some SendableSyncCache<ID, Value> {
+        UncheckedSendableSyncCache(syncCache: self)
     }
 }
 
-extension SendableSyncProvider {
+extension SendableSyncCache {
     /**
      Forces a non-sendable sync provider into being `Sendable`.
 
      In case you are using `forceSendable` in a generic context —So Meta— this override skips the wrapper when you
      actually apply it to a `SyncProvider` that is already `Sendable`.
      */
-    func forceSendable() -> some SendableSyncProvider<ID, Value, Failure> {
+    func forceSendable() -> some SendableSyncCache<ID, Value> {
         self
     }
 }

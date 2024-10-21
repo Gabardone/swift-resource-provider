@@ -22,6 +22,8 @@ import System
 public struct LocalFileDataCache {
     private let storageDirectory: FilePath
 
+    // Per docs, safe to use multi-threaded as long as there's not a delegate.
+    nonisolated(unsafe)
     private let fileManager: FileManager
 
     /**
@@ -50,7 +52,7 @@ public struct LocalFileDataCache {
 }
 
 @available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
-extension LocalFileDataCache: SyncCache {
+extension LocalFileDataCache: SendableSyncCache {
     public func value(for id: FilePath) -> Data? {
         fileManager.contents(atPath: storageDirectory.appending(id.components).description)
     }

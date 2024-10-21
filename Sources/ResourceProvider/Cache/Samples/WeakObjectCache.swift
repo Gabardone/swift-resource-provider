@@ -15,7 +15,7 @@ import Foundation
  The type is declared synchronous since it's fast and simple enough to be used synchronously, use `serialized` to use in
  a concurrent context.
  */
-public struct WeakObjectCache<ID: Hashable & Sendable, Value: AnyObject> {
+public struct WeakObjectCache<ID: Hashable, Value: AnyObject> {
     public init() {}
 
     // MARK: - Stored Properties
