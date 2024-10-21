@@ -5,7 +5,7 @@
 //  Created by Óscar Morales Vivó on 10/21/24.
 //
 
-private struct ConcurrentSyncCache<C: SyncCache & Sendable> where C.ID: Sendable, C.Value: Sendable {
+private struct ConcurrentSyncCache<C: SendableSyncCache> where C.ID: Sendable, C.Value: Sendable {
     let syncCache: C
 }
 

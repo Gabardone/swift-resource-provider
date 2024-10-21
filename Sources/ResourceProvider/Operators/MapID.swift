@@ -65,7 +65,7 @@ public extension SendableSyncProvider {
      - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling provider.
      - Returns: A provider that takes `OtherID` as its `ID` type.
      */
-    func mapID<OtherID: Hashable & Sendable>(
+    func mapID<OtherID: Hashable>(
         _ transform: @escaping @Sendable (OtherID) -> ID
     ) -> some SendableSyncProvider<OtherID, Value, Failure> {
         IDMappingSendableSyncProvider(mapped: self, idMapper: transform)
