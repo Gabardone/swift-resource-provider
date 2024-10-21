@@ -15,15 +15,17 @@ public struct AnySendableSyncProvider<ID: Hashable, Value, Failure: Error> {
     }
 }
 
-extension AnySendableSyncProvider: SyncProvider {
+extension AnySendableSyncProvider: SendableSyncProvider {
     public func value(for id: ID) throws(Failure) -> Value {
         try valueForID(id)
     }
+
+    public func eraseToAnySendableSyncProvider() -> AnySendableSyncProvider<ID, Value, Failure> {
+        self
+    }
 }
 
-extension AnySendableSyncProvider: Sendable {}
-
-extension SyncProvider where Self: Sendable {
+extension SendableSyncProvider {
     func eraseToAnySyncProvider() -> AnySendableSyncProvider<ID, Value, Failure> {
         AnySendableSyncProvider { id throws(Failure) in
             try self.value(for: id)

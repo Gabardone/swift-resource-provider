@@ -136,7 +136,7 @@ public extension SyncProvider where Failure == Never {
 
 // MARK: - Sendable SyncProvider Side Effect
 
-private struct SideEffectedNeverFailureSendableSyncProvider<Effected: SyncProvider & Sendable>: SyncProvider, Sendable {
+private struct SideEffectedNeverFailureSendableSyncProvider<Effected: SendableSyncProvider>: SendableSyncProvider {
     typealias SideEffect = @Sendable (Effected.Value, Effected.ID) -> Void
 
     var sideEffected: Effected
@@ -150,7 +150,7 @@ private struct SideEffectedNeverFailureSendableSyncProvider<Effected: SyncProvid
     }
 }
 
-public extension SyncProvider where Self: Sendable {
+public extension SendableSyncProvider {
     /**
      Runs a side effect with the returned value and id.
 
@@ -162,12 +162,12 @@ public extension SyncProvider where Self: Sendable {
      */
     func sideEffect(
         _ sideEffect: @escaping @Sendable (Value, ID) -> Void
-    ) -> some SyncProvider<ID, Value, Failure> & Sendable {
+    ) -> some SendableSyncProvider<ID, Value, Failure> {
         SideEffectedNeverFailureSendableSyncProvider(sideEffected: self, sideEffect: sideEffect)
     }
 }
 
-private struct SideEffectedSameFailureSendableSyncProvider<Effected: SyncProvider & Sendable>: SyncProvider, Sendable {
+private struct SideEffectedSameFailureSendableSyncProvider<Effected: SendableSyncProvider>: SendableSyncProvider {
     typealias SideEffect = @Sendable (Effected.Value, Effected.ID) throws(Effected.Failure) -> Void
 
     var sideEffected: Effected
@@ -181,7 +181,7 @@ private struct SideEffectedSameFailureSendableSyncProvider<Effected: SyncProvide
     }
 }
 
-public extension SyncProvider where Self: Sendable {
+public extension SendableSyncProvider {
     /**
      Runs a side effect with the returned value and id.
 
@@ -193,15 +193,15 @@ public extension SyncProvider where Self: Sendable {
      */
     func sideEffect<OtherFailure: Error>(
         _ sideEffect: @escaping @Sendable (Value, ID) throws(OtherFailure) -> Void
-    ) -> some SyncProvider<ID, Value, Failure> & Sendable where OtherFailure == Failure {
+    ) -> some SendableSyncProvider<ID, Value, Failure> where OtherFailure == Failure {
         SideEffectedSameFailureSendableSyncProvider(sideEffected: self, sideEffect: sideEffect)
     }
 }
 
 private struct SideEffectedAnyFailureSendableSyncProvider<
-    Effected: SyncProvider & Sendable,
+    Effected: SendableSyncProvider,
     SideEffectError: Error
->: SyncProvider, Sendable {
+>: SendableSyncProvider {
     typealias SideEffect = @Sendable (Effected.Value, Effected.ID) throws(SideEffectError) -> Void
 
     var sideEffected: Effected
@@ -215,7 +215,7 @@ private struct SideEffectedAnyFailureSendableSyncProvider<
     }
 }
 
-public extension SyncProvider where Self: Sendable {
+public extension SendableSyncProvider {
     /**
      Runs a side effect with the returned value and id that may `throw`.
 
@@ -227,15 +227,15 @@ public extension SyncProvider where Self: Sendable {
      */
     func sideEffect<OtherFailure: Error>(
         _ sideEffect: @escaping @Sendable (Value, ID) throws(OtherFailure) -> Void
-    ) -> some SyncProvider<ID, Value, any Error> & Sendable {
+    ) -> some SendableSyncProvider<ID, Value, any Error> {
         SideEffectedAnyFailureSendableSyncProvider(sideEffected: self, sideEffect: sideEffect)
     }
 }
 
 private struct SideEffectedNewFailureSendableSyncProvider<
-    Effected: SyncProvider & Sendable,
+    Effected: SendableSyncProvider,
     SideEffectError: Error
->: SyncProvider, Sendable where Effected.Failure == Never {
+>: SendableSyncProvider where Effected.Failure == Never {
     typealias SideEffect = @Sendable (Effected.Value, Effected.ID) throws(SideEffectError) -> Void
 
     var sideEffected: Effected
@@ -249,7 +249,7 @@ private struct SideEffectedNewFailureSendableSyncProvider<
     }
 }
 
-public extension SyncProvider where Self: Sendable, Failure == Never {
+public extension SendableSyncProvider where Failure == Never {
     /**
      Runs a side effect with the returned value and id that may `throw`.
 
@@ -261,7 +261,7 @@ public extension SyncProvider where Self: Sendable, Failure == Never {
      */
     func sideEffect<OtherFailure: Error>(
         _ sideEffect: @escaping @Sendable (Value, ID) throws(OtherFailure) -> Void
-    ) -> some SyncProvider<ID, Value, OtherFailure> & Sendable {
+    ) -> some SendableSyncProvider<ID, Value, OtherFailure> {
         SideEffectedNewFailureSendableSyncProvider(sideEffected: self, sideEffect: sideEffect)
     }
 }

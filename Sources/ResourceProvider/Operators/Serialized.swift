@@ -6,7 +6,7 @@
 //
 
 private actor SyncProviderSerializer<
-    Provider: SyncProvider & Sendable
+    Provider: SendableSyncProvider
 > where Provider.ID: Sendable, Provider.Value: Sendable {
     let serializedProvider: Provider
 
@@ -26,7 +26,7 @@ extension SyncProviderSerializer: AsyncProvider {
     }
 }
 
-public extension SyncProvider where Self: Sendable, ID: Sendable, Value: Sendable {
+public extension SendableSyncProvider where ID: Sendable, Value: Sendable {
     /**
      Returns a wrapper for a sync provider that guarantees serialization.
 

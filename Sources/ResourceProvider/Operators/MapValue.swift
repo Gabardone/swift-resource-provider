@@ -144,9 +144,9 @@ public extension SyncProvider where Failure == Never {
 // MARK: - Sendable SyncProvider Map Value
 
 private struct ValueMappingNeverFailureSendableSyncProvider<
-    Mapped: SyncProvider & Sendable,
+    Mapped: SendableSyncProvider,
     Value
->: SyncProvider & Sendable {
+>: SendableSyncProvider {
     typealias ValueMapper = @Sendable (Mapped.Value, ID) -> Value
 
     var mapped: Mapped
@@ -158,7 +158,7 @@ private struct ValueMappingNeverFailureSendableSyncProvider<
     }
 }
 
-public extension SyncProvider where Self: Sendable {
+public extension SendableSyncProvider {
     /**
      Maps the calling provider's `Value` type to a different type.
 
@@ -172,15 +172,15 @@ public extension SyncProvider where Self: Sendable {
      */
     func mapValue<OtherValue>(
         _ transform: @escaping @Sendable (Value, ID) -> OtherValue
-    ) -> some SyncProvider<ID, OtherValue, Failure> & Sendable {
+    ) -> some SendableSyncProvider<ID, OtherValue, Failure> {
         ValueMappingNeverFailureSendableSyncProvider(mapped: self, valueMapper: transform)
     }
 }
 
 private struct ValueMappingSameFailureSendableSyncProvider<
-    Mapped: SyncProvider & Sendable,
+    Mapped: SendableSyncProvider,
     Value
->: SyncProvider & Sendable {
+>: SendableSyncProvider {
     typealias ValueMapper = @Sendable (Mapped.Value, ID) throws(Mapped.Failure) -> Value
 
     var mapped: Mapped
@@ -192,7 +192,7 @@ private struct ValueMappingSameFailureSendableSyncProvider<
     }
 }
 
-public extension SyncProvider where Self: Sendable {
+public extension SendableSyncProvider {
     /**
      Maps the calling provider's `Value` type to a different type.
 
@@ -206,16 +206,16 @@ public extension SyncProvider where Self: Sendable {
      */
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping @Sendable (Value, ID) throws(OtherFailure) -> OtherValue
-    ) -> some SyncProvider<ID, OtherValue, Failure> & Sendable where OtherFailure == Failure {
+    ) -> some SendableSyncProvider<ID, OtherValue, Failure> where OtherFailure == Failure {
         ValueMappingSameFailureSendableSyncProvider(mapped: self, valueMapper: transform)
     }
 }
 
 private struct ValueMappingAnyFailureSendableSyncProvider<
-    Mapped: SyncProvider & Sendable,
+    Mapped: SendableSyncProvider,
     Value,
     ValueMappingError: Error
->: SyncProvider & Sendable {
+>: SendableSyncProvider {
     typealias ValueMapper = @Sendable (Mapped.Value, ID) throws(ValueMappingError) -> Value
 
     var mapped: Mapped
@@ -227,7 +227,7 @@ private struct ValueMappingAnyFailureSendableSyncProvider<
     }
 }
 
-public extension SyncProvider where Self: Sendable {
+public extension SendableSyncProvider {
     /**
      Maps the calling provider's `Value` type to a different type.
 
@@ -243,16 +243,16 @@ public extension SyncProvider where Self: Sendable {
      */
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping @Sendable (Value, ID) throws(OtherFailure) -> OtherValue
-    ) -> some SyncProvider<ID, OtherValue, any Error> & Sendable {
+    ) -> some SendableSyncProvider<ID, OtherValue, any Error> {
         ValueMappingAnyFailureSendableSyncProvider(mapped: self, valueMapper: transform)
     }
 }
 
 private struct ValueMappingNewFailureSendableSyncProvider<
-    Mapped: SyncProvider & Sendable,
+    Mapped: SendableSyncProvider,
     Value,
     ValueMappingError: Error
->: SyncProvider & Sendable where Mapped.Failure == Never {
+>: SendableSyncProvider where Mapped.Failure == Never {
     typealias ValueMapper = @Sendable (Mapped.Value, ID) throws(ValueMappingError) -> Value
 
     var mapped: Mapped
@@ -264,7 +264,7 @@ private struct ValueMappingNewFailureSendableSyncProvider<
     }
 }
 
-public extension SyncProvider where Self: Sendable, Failure == Never {
+public extension SendableSyncProvider where Failure == Never {
     /**
      Maps the calling provider's `Value` type to a different type.
 
@@ -280,7 +280,7 @@ public extension SyncProvider where Self: Sendable, Failure == Never {
      */
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping @Sendable (Value, ID) throws(OtherFailure) -> OtherValue
-    ) -> some SyncProvider<ID, OtherValue, OtherFailure> & Sendable {
+    ) -> some SendableSyncProvider<ID, OtherValue, OtherFailure> {
         ValueMappingNewFailureSendableSyncProvider(mapped: self, valueMapper: transform)
     }
 }

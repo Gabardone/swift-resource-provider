@@ -23,6 +23,16 @@ public extension SyncProvider {
     }
 }
 
+public protocol SendableSyncProvider<ID, Value, Failure>: SyncProvider, Sendable {
+    func eraseToAnySendableSyncProvider() -> AnySendableSyncProvider<ID, Value, Failure>
+}
+
+public extension SendableSyncProvider {
+    func eraseToAnySendableSyncProvider() -> AnySendableSyncProvider<ID, Value, Failure> {
+        .init(valueForID: self.value(for:))
+    }
+}
+
 public extension Provider {
     /**
      Builds an asynchronous provider source.
@@ -44,7 +54,7 @@ public extension Provider {
      */
     static func source<ID: Hashable, Value, Failure: Error>(
         _ source: @escaping @Sendable (ID) throws(Failure) -> Value
-    ) -> some SyncProvider<ID, Value, Failure> & Sendable {
+    ) -> some SendableSyncProvider<ID, Value, Failure> {
         AnySendableSyncProvider(valueForID: source)
     }
 }

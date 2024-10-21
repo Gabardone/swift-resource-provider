@@ -147,8 +147,8 @@ extension SyncProvider where Failure == Never {
 // MARK: - Sendable SyncProvider Interjection
 
 private struct InterjectingNoFailureSendableSyncProvider<
-    Interjected: SyncProvider & Sendable
->: SyncProvider, Sendable {
+    Interjected: SendableSyncProvider
+>: SendableSyncProvider {
     typealias Interjector = @Sendable (Interjected.ID) -> Interjected.Value?
 
     var interjected: Interjected
@@ -164,7 +164,7 @@ private struct InterjectingNoFailureSendableSyncProvider<
     }
 }
 
-public extension SyncProvider where Self: Sendable {
+public extension SendableSyncProvider {
     /**
      Allows for optionally intercepting a request for an `id` and returning something different.
 
@@ -177,14 +177,14 @@ public extension SyncProvider where Self: Sendable {
      */
     func interject(
         _ interject: @escaping @Sendable (ID) -> Value?
-    ) -> some SyncProvider<ID, Value, Failure> & Sendable {
+    ) -> some SendableSyncProvider<ID, Value, Failure> {
         InterjectingNoFailureSendableSyncProvider(interjected: self, interjector: interject)
     }
 }
 
 private struct InterjectingSameFailureSendableSyncProvider<
-    Interjected: SyncProvider & Sendable
->: SyncProvider, Sendable {
+    Interjected: SendableSyncProvider
+>: SendableSyncProvider {
     typealias Interjector = @Sendable (Interjected.ID) throws(Interjected.Failure) -> Interjected.Value?
 
     var interjected: Interjected
@@ -200,7 +200,7 @@ private struct InterjectingSameFailureSendableSyncProvider<
     }
 }
 
-public extension SyncProvider where Self: Sendable {
+public extension SendableSyncProvider {
     /**
      Allows for optionally intercepting a request for an `id` and returning something different.
 
@@ -213,15 +213,15 @@ public extension SyncProvider where Self: Sendable {
      */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) throws(OtherFailure) -> Value?
-    ) -> some SyncProvider<ID, Value, Failure> & Sendable where OtherFailure == Failure {
+    ) -> some SendableSyncProvider<ID, Value, Failure> where OtherFailure == Failure {
         InterjectingSameFailureSendableSyncProvider(interjected: self, interjector: interject)
     }
 }
 
 private struct InterjectingAnyFailureSendableSyncProvider<
-    Interjected: SyncProvider & Sendable,
+    Interjected: SendableSyncProvider,
     InterjectionError: Error
->: SyncProvider, Sendable {
+>: SendableSyncProvider {
     typealias Interjector = @Sendable (Interjected.ID) throws(InterjectionError) -> Interjected.Value?
 
     var interjected: Interjected
@@ -237,7 +237,7 @@ private struct InterjectingAnyFailureSendableSyncProvider<
     }
 }
 
-public extension SyncProvider where Self: Sendable {
+public extension SendableSyncProvider {
     /**
      Allows for optionally intercepting a request for an `id` and returning something different.
 
@@ -250,15 +250,15 @@ public extension SyncProvider where Self: Sendable {
      */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) throws(OtherFailure) -> Value?
-    ) -> some SyncProvider<ID, Value, any Error> & Sendable {
+    ) -> some SendableSyncProvider<ID, Value, any Error> {
         InterjectingAnyFailureSendableSyncProvider(interjected: self, interjector: interject)
     }
 }
 
 private struct InterjectingNewFailureSendableSyncProvider<
-    Interjected: SyncProvider & Sendable,
+    Interjected: SendableSyncProvider,
     InterjectionError: Error
->: SyncProvider, Sendable where Interjected.Failure == Never {
+>: SendableSyncProvider where Interjected.Failure == Never {
     typealias Interjector = @Sendable (Interjected.ID) throws(InterjectionError) -> Interjected.Value?
 
     var interjected: Interjected
@@ -274,7 +274,7 @@ private struct InterjectingNewFailureSendableSyncProvider<
     }
 }
 
-extension SyncProvider where Failure == Never, Self: Sendable {
+extension SendableSyncProvider where Failure == Never {
     /**
      Allows for optionally intercepting a request for an `id` and returning something different.
 
@@ -287,7 +287,7 @@ extension SyncProvider where Failure == Never, Self: Sendable {
      */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) throws(OtherFailure) -> Value?
-    ) -> some SyncProvider<ID, Value, OtherFailure> & Sendable {
+    ) -> some SendableSyncProvider<ID, Value, OtherFailure> {
         InterjectingNewFailureSendableSyncProvider(interjected: self, interjector: interject)
     }
 }

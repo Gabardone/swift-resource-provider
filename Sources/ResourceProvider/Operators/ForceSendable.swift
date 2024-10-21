@@ -7,7 +7,7 @@
 
 private struct UncheckedSendableSyncProvider<
     P: SyncProvider
->: SyncProvider, @unchecked Sendable {
+>: SendableSyncProvider, @unchecked Sendable {
     var wrappedProvider: P
 
     func value(for id: P.ID) throws(P.Failure) -> P.Value {
@@ -27,19 +27,19 @@ extension SyncProvider {
      involves `@unchecked Sendable` wrappers that's on you, the developer—.
      - Returns: An IKWID `SyncProvider` that has the exact same behavior as the caller but
      */
-    func forceSendable() -> some SyncProvider<ID, Value, Failure> & Sendable {
+    func forceSendable() -> some SendableSyncProvider<ID, Value, Failure> {
         UncheckedSendableSyncProvider(wrappedProvider: self)
     }
 }
 
-extension SyncProvider where Self: Sendable {
+extension SendableSyncProvider {
     /**
      Forces a non-sendable sync provider into being `Sendable`.
 
      In case you are using `forceSendable` in a generic context —So Meta— this override skips the wrapper when you
      actually apply it to a `SyncProvider` that is already `Sendable`.
      */
-    func forceSendable() -> some SyncProvider<ID, Value, Failure> & Sendable {
+    func forceSendable() -> some SendableSyncProvider<ID, Value, Failure> {
         self
     }
 }

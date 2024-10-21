@@ -41,9 +41,9 @@ public extension SyncProvider {
 // MARK: - Sendable SyncProvider Map ID
 
 private struct IDMappingSendableSyncProvider<
-    Mapped: SyncProvider & Sendable,
+    Mapped: SendableSyncProvider,
     ID: Hashable
->: SyncProvider, Sendable {
+>: SendableSyncProvider {
     typealias IDMapper = @Sendable (ID) -> Mapped.ID
 
     var mapped: Mapped
@@ -55,7 +55,7 @@ private struct IDMappingSendableSyncProvider<
     }
 }
 
-public extension SyncProvider where Self: Sendable {
+public extension SendableSyncProvider {
     /**
      Maps an id type to the calling provider's id type.
 
@@ -67,7 +67,7 @@ public extension SyncProvider where Self: Sendable {
      */
     func mapID<OtherID: Hashable & Sendable>(
         _ transform: @escaping @Sendable (OtherID) -> ID
-    ) -> some SyncProvider<OtherID, Value, Failure> & Sendable {
+    ) -> some SendableSyncProvider<OtherID, Value, Failure> {
         IDMappingSendableSyncProvider(mapped: self, idMapper: transform)
     }
 }
