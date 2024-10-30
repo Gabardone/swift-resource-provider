@@ -8,6 +8,9 @@
 import PDFKit
 
 extension PDFDocument {
+    // This shouldn't parse into any PDFDocument
+    static let badDocumentData = Data(count: 16)
+
     static let sampleDocumentData: Data = {
         let sampleDocumentURL = Bundle.module.url(forResource: "SampleDocument", withExtension: "pdf")!
         return try! Data(contentsOf: sampleDocumentURL)

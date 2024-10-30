@@ -33,6 +33,18 @@ extension WeakObjectCache: SyncCache {
     }
 }
 
+extension WeakObjectCache where ID: Sendable, Value: Sendable {
+    /**
+     Quick conversion to `AsyncCache`
+
+     A weak object cache is not `Sendable` since concurrent access to its internal state would cause data races, but
+     if it's wrapped in an actor and thus run serially it can safely be accessed asynchronously.
+     */
+    public func makeAsync() -> some AsyncCache<ID, Value> {
+        forceSendable().serialized()
+    }
+}
+
 /**
  A simple, private wrapper type so value types and reference types that don't inherit from `NSObject` can be used as
  keys for a `NSMapTable`. An implementation detail.

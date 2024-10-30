@@ -36,7 +36,7 @@ public extension SyncCache {
     }
 }
 
-public extension SyncCache where Self: Sendable, ID: Sendable {
+public extension SendableSyncCache where ID: Sendable {
     /**
      Maps a value type to the calling cache's value type.
 

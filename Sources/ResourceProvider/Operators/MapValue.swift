@@ -64,9 +64,10 @@ public extension SyncProvider {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
-    func mapValue<OtherValue, OtherFailure: Error>(
-        _ transform: @escaping (Value, ID) throws(OtherFailure) -> OtherValue
-    ) -> some SyncProvider<ID, OtherValue, Failure> where OtherFailure == Failure {
+    @_disfavoredOverload
+    func mapValue<OtherValue>(
+        _ transform: @escaping (Value, ID) throws(Failure) -> OtherValue
+    ) -> some SyncProvider<ID, OtherValue, Failure> {
         ValueMappingSameFailureSyncProvider(mapped: self, valueMapper: transform)
     }
 }
@@ -97,6 +98,7 @@ public extension SyncProvider {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
+    @_disfavoredOverload
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping (Value, ID) throws(OtherFailure) -> OtherValue
     ) -> some SyncProvider<ID, OtherValue, any Error> {
@@ -204,9 +206,10 @@ public extension SendableSyncProvider {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
-    func mapValue<OtherValue, OtherFailure: Error>(
-        _ transform: @escaping @Sendable (Value, ID) throws(OtherFailure) -> OtherValue
-    ) -> some SendableSyncProvider<ID, OtherValue, Failure> where OtherFailure == Failure {
+    @_disfavoredOverload
+    func mapValue<OtherValue>(
+        _ transform: @escaping @Sendable (Value, ID) throws(Failure) -> OtherValue
+    ) -> some SendableSyncProvider<ID, OtherValue, Failure> {
         ValueMappingSameFailureSendableSyncProvider(mapped: self, valueMapper: transform)
     }
 }
@@ -241,6 +244,7 @@ public extension SendableSyncProvider {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
+    @_disfavoredOverload
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping @Sendable (Value, ID) throws(OtherFailure) -> OtherValue
     ) -> some SendableSyncProvider<ID, OtherValue, any Error> {
@@ -478,6 +482,7 @@ public extension AsyncProvider {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
+    @_disfavoredOverload
     func mapValue<OtherValue>(
         _ transform: @escaping @Sendable (Value, ID) async throws(Failure) -> OtherValue
     ) -> some AsyncProvider<ID, OtherValue, Failure> {
@@ -511,6 +516,7 @@ public extension AsyncProvider {
      `nil`.
      - Returns: A provider that returns `OtherValue` as its value type.
      */
+    @_disfavoredOverload
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping @Sendable (Value, ID) async throws(OtherFailure) -> OtherValue
     ) -> some AsyncProvider<ID, OtherValue, any Error> {

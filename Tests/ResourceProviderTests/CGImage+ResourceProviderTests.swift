@@ -16,6 +16,9 @@ extension CGImage {
     // Does not `throw` as it's expected for the test setup to work.
     static let sampleImageData: Data = try! Data(contentsOf: sampleImageURL)
 
+    // This shouldn't parse into any CGImage
+    static let badImageData = Data(count: 16)
+
     // Does not `throw` as it's expected for the test setup to work.
     static let sampleImage: CGImage = {
         let dataProvider = CGDataProvider(url: sampleImageURL as CFURL)!
@@ -32,7 +35,7 @@ extension CGImage {
         case dataIsNotValidPNG
     }
 
-    static func makePNGImage(from pngData: Data) throws -> CGImage {
+    static func makePNGImage(from pngData: Data) throws(ImageTestError) -> CGImage {
         guard let dataProvider = CGDataProvider(data: pngData as CFData) else {
             throw ImageTestError.unableToCreateProviderFromData
         }
