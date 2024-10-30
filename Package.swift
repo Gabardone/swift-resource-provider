@@ -26,7 +26,8 @@ let package = Package(
         ),
         .testTarget(
             name: "ResourceProviderTests",
-            dependencies: ["ResourceProvider"]
+            dependencies: ["ResourceProvider"],
+            resources: [.process("Resources")]
         )
     ],
     swiftLanguageModes: [.v5, .v6]

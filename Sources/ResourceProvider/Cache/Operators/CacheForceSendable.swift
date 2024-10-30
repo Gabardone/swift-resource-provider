@@ -29,7 +29,7 @@ extension SyncCache {
      involves `@unchecked Sendable` wrappers that's on you, the developer—.
      - Returns: An IKWID `SyncProvider` that has the exact same behavior as the caller but
      */
-    func forceSendable() -> some SendableSyncCache<ID, Value> {
+    public func forceSendable() -> some SendableSyncCache<ID, Value> {
         UncheckedSendableSyncCache(syncCache: self)
     }
 }
@@ -41,7 +41,7 @@ extension SendableSyncCache {
      In case you are using `forceSendable` in a generic context —So Meta— this override skips the wrapper when you
      actually apply it to a `SyncProvider` that is already `Sendable`.
      */
-    func forceSendable() -> some SendableSyncCache<ID, Value> {
+    public func forceSendable() -> some SendableSyncCache<ID, Value> {
         self
     }
 }
