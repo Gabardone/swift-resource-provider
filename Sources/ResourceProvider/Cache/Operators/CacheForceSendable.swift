@@ -5,7 +5,7 @@
 //  Created by Óscar Morales Vivó on 10/21/24.
 //
 
-private struct UncheckedSendableSyncCache<C: SyncCache>: SendableSyncCache, @unchecked Sendable {
+private struct UncheckedSendableSyncCache<C: SyncCache>: SyncCache, @unchecked Sendable {
     var syncCache: C
 
     func value(for id: C.ID) -> C.Value? {
@@ -34,7 +34,7 @@ extension SyncCache {
     }
 }
 
-extension SendableSyncCache {
+extension SyncCache where Self: Sendable {
     /**
      Forces a non-sendable sync provider into being `Sendable`.
 

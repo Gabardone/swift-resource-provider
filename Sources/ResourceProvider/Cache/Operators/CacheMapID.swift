@@ -24,7 +24,7 @@ public extension SyncCache {
     }
 }
 
-public extension SendableSyncCache {
+public extension SyncCache where Self: Sendable {
     /**
      Maps an id type to the calling cache's id type.
 

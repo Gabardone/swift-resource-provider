@@ -64,7 +64,7 @@ public extension SyncCache {
 
 // MARK: - SendableSyncCache Side Effects
 
-private struct ValueForSideEffectedSendableSyncCache<Effected: SendableSyncCache>: SendableSyncCache {
+private struct ValueForSideEffectedSendableSyncCache<Effected: SyncCache & Sendable>: SyncCache, Sendable {
     typealias ID = Effected.ID
 
     typealias Value = Effected.Value
@@ -86,13 +86,13 @@ private struct ValueForSideEffectedSendableSyncCache<Effected: SendableSyncCache
     }
 }
 
-public extension SendableSyncCache {
+public extension SyncCache where Self: Sendable {
     func valueForSideEffect(sideEffect: @escaping @Sendable (Value?, ID) -> Void) -> some SyncCache<ID, Value> {
         ValueForSideEffectedSendableSyncCache(sideEffected: self, valueForSideEffect: sideEffect)
     }
 }
 
-private struct StoreValueForSideEffectedSendableSyncCache<Effected: SendableSyncCache>: SendableSyncCache {
+private struct StoreValueForSideEffectedSendableSyncCache<Effected: SyncCache & Sendable>: SyncCache, Sendable {
     typealias ID = Effected.ID
 
     typealias Value = Effected.Value
@@ -113,7 +113,7 @@ private struct StoreValueForSideEffectedSendableSyncCache<Effected: SendableSync
     }
 }
 
-public extension SendableSyncCache {
+public extension SyncCache where Self: Sendable {
     func storeValueForSideEffect(sideEffect: @escaping @Sendable (Value, ID) -> Void) -> some SyncCache<ID, Value> {
         StoreValueForSideEffectedSendableSyncCache(sideEffected: self, storeValueForSideEffect: sideEffect)
     }

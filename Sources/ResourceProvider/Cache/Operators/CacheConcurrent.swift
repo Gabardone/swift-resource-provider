@@ -6,7 +6,7 @@
 //
 
 private struct ConcurrentSyncCache<
-    Concurred: SendableSyncCache
+    Concurred: SyncCache & Sendable
 > where Concurred.ID: Sendable, Concurred.Value: Sendable {
     private let concurred: Concurred
 
@@ -25,7 +25,7 @@ extension ConcurrentSyncCache: AsyncCache {
     }
 }
 
-public extension SendableSyncCache where Self: Sendable, ID: Sendable, Value: Sendable {
+public extension SyncCache where Self: Sendable, ID: Sendable, Value: Sendable {
     /**
      Returns a wrapper for a sync cache that guarantees serialization.
 

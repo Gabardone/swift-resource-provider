@@ -5,11 +5,9 @@
 //  Created by Óscar Morales Vivó on 10/21/24.
 //
 
-public protocol SendableSyncCache<ID, Value>: SyncCache, Sendable {
-    func eraseToAnySendableSyncCache() -> AnySendableSyncCache<ID, Value>
-}
+public typealias SendableSyncCache<I, V> = SyncCache<I, V> & Sendable
 
-extension SendableSyncCache {
+extension SyncCache where Self: Sendable {
     public func eraseToAnySendableSyncCache() -> AnySendableSyncCache<ID, Value> {
         AnySendableSyncCache(valueForID: self.value(for:), storeValueForID: self.store(value:for:))
     }

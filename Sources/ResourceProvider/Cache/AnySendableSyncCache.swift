@@ -5,7 +5,7 @@
 //  Created by Óscar Morales Vivó on 10/21/24.
 //
 
-public struct AnySendableSyncCache<ID: Hashable, Value> {
+public struct AnySendableSyncCache<ID: Hashable, Value>: Sendable {
     public typealias ValueForID = @Sendable (ID) -> Value?
 
     public typealias StoreValueForID = @Sendable (Value, ID) -> Void
@@ -33,7 +33,7 @@ extension AnySendableSyncCache: SyncCache {
     }
 }
 
-extension AnySendableSyncCache: SendableSyncCache {
+extension AnySendableSyncCache {
     public func eraseToAnySendableSyncCache() -> AnySendableSyncCache<ID, Value> {
         self
     }
