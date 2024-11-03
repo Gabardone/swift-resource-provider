@@ -40,9 +40,9 @@ public extension SyncProvider {
     }
 }
 
-// MARK: - Sendable SyncProvider Catching
+// MARK: - SyncProvider & Sendable Catching
 
-private struct CatchingSendableSyncProvider<Caught: SendableSyncProvider, Failure: Error>: SendableSyncProvider {
+private struct CatchingSendableSyncProvider<Caught: SyncProvider & Sendable, Failure: Error>: SyncProvider, Sendable {
     typealias Catcher = @Sendable (Caught.Failure, ID) throws(Failure) -> Caught.Value
 
     var caught: Caught
@@ -58,7 +58,7 @@ private struct CatchingSendableSyncProvider<Caught: SendableSyncProvider, Failur
     }
 }
 
-public extension SyncProvider where Self: SendableSyncProvider {
+public extension SyncProvider where Self: Sendable {
     func `catch`<OtherFailure: Error>(
         _ catcher: @escaping @Sendable (Failure, ID) throws(OtherFailure) -> Value
     ) -> some SendableSyncProvider<ID, Value, OtherFailure> {

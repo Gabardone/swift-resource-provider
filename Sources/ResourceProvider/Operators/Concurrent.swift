@@ -5,7 +5,7 @@
 //  Created by Óscar Morales Vivó on 10/19/24.
 //
 
-private struct ConcurrentSyncProvider<P: SendableSyncProvider>: AsyncProvider {
+private struct ConcurrentSyncProvider<P: SyncProvider>: AsyncProvider where P: Sendable {
     let syncProvider: P
 
     func value(for id: P.ID) async throws(P.Failure) -> P.Value {
@@ -13,7 +13,7 @@ private struct ConcurrentSyncProvider<P: SendableSyncProvider>: AsyncProvider {
     }
 }
 
-public extension SendableSyncProvider {
+public extension SyncProvider where Self: Sendable {
     /**
      Returns a wrapper for a sync provider that guarantees serialization.
 

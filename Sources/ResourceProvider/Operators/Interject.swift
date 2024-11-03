@@ -144,11 +144,11 @@ extension SyncProvider where Failure == Never {
     }
 }
 
-// MARK: - Sendable SyncProvider Interjection
+// MARK: - SyncProvider & Sendable Interjection
 
 private struct InterjectingNoFailureSendableSyncProvider<
-    Interjected: SendableSyncProvider
->: SendableSyncProvider {
+    Interjected: SyncProvider & Sendable
+>: SyncProvider, Sendable {
     typealias Interjector = @Sendable (Interjected.ID) -> Interjected.Value?
 
     var interjected: Interjected
@@ -164,7 +164,7 @@ private struct InterjectingNoFailureSendableSyncProvider<
     }
 }
 
-public extension SendableSyncProvider {
+public extension SyncProvider where Self: Sendable {
     /**
      Allows for optionally intercepting a request for an `id` and returning something different.
 
@@ -183,8 +183,8 @@ public extension SendableSyncProvider {
 }
 
 private struct InterjectingSameFailureSendableSyncProvider<
-    Interjected: SendableSyncProvider
->: SendableSyncProvider {
+    Interjected: SyncProvider & Sendable
+>: SyncProvider & Sendable {
     typealias Interjector = @Sendable (Interjected.ID) throws(Interjected.Failure) -> Interjected.Value?
 
     var interjected: Interjected
@@ -200,7 +200,7 @@ private struct InterjectingSameFailureSendableSyncProvider<
     }
 }
 
-public extension SendableSyncProvider {
+public extension SyncProvider where Self: Sendable {
     /**
      Allows for optionally intercepting a request for an `id` and returning something different.
 
@@ -219,9 +219,9 @@ public extension SendableSyncProvider {
 }
 
 private struct InterjectingAnyFailureSendableSyncProvider<
-    Interjected: SendableSyncProvider,
+    Interjected: SyncProvider & Sendable,
     InterjectionError: Error
->: SendableSyncProvider {
+>: SyncProvider & Sendable {
     typealias Interjector = @Sendable (Interjected.ID) throws(InterjectionError) -> Interjected.Value?
 
     var interjected: Interjected
@@ -237,7 +237,7 @@ private struct InterjectingAnyFailureSendableSyncProvider<
     }
 }
 
-public extension SendableSyncProvider {
+public extension SyncProvider where Self: Sendable {
     /**
      Allows for optionally intercepting a request for an `id` and returning something different.
 
@@ -256,9 +256,9 @@ public extension SendableSyncProvider {
 }
 
 private struct InterjectingNewFailureSendableSyncProvider<
-    Interjected: SendableSyncProvider,
+    Interjected: SyncProvider & Sendable,
     InterjectionError: Error
->: SendableSyncProvider where Interjected.Failure == Never {
+>: SyncProvider, Sendable where Interjected.Failure == Never {
     typealias Interjector = @Sendable (Interjected.ID) throws(InterjectionError) -> Interjected.Value?
 
     var interjected: Interjected
@@ -274,7 +274,7 @@ private struct InterjectingNewFailureSendableSyncProvider<
     }
 }
 
-extension SendableSyncProvider where Failure == Never {
+public extension SyncProvider where Self: Sendable, Failure == Never {
     /**
      Allows for optionally intercepting a request for an `id` and returning something different.
 

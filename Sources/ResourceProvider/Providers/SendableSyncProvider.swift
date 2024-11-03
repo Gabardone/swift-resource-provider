@@ -5,11 +5,18 @@
 //  Created by Óscar Morales Vivó on 10/21/24.
 //
 
-public protocol SendableSyncProvider<ID, Value, Failure>: SyncProvider, Sendable {
-    func eraseToAnySendableSyncProvider() -> AnySendableSyncProvider<ID, Value, Failure>
-}
+/**
+ `typealias` for a `SyncProvider` that is also `Sendable`.
 
-public extension SendableSyncProvider {
+ You can erase these to `AnySendableSyncProvider` and in general they are much easier to deal with if there's any
+ asynchronicity in the fully built provider chain.
+
+ Swift won't let you use this `typealias` in many places, but it's useful for `some SendableSyncProvider<…>`
+ as a return type for a generic function.
+ */
+public typealias SendableSyncProvider<I, V, F> = SyncProvider<I, V, F> & Sendable
+
+public extension SyncProvider where Self: Sendable {
     func eraseToAnySendableSyncProvider() -> AnySendableSyncProvider<ID, Value, Failure> {
         .init(valueForID: self.value(for:))
     }

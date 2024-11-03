@@ -5,8 +5,10 @@
 //  Created by Óscar Morales Vivó on 10/3/24.
 //
 
+import Foundation
+
 private actor SyncProviderSerializer<
-    Provider: SendableSyncProvider
+    Provider: SyncProvider & Sendable
 > where Provider.ID: Sendable, Provider.Value: Sendable {
     let serializedProvider: Provider
 
@@ -26,7 +28,7 @@ extension SyncProviderSerializer: AsyncProvider {
     }
 }
 
-public extension SendableSyncProvider where ID: Sendable, Value: Sendable {
+public extension SyncProvider where Self: Sendable, ID: Sendable, Value: Sendable {
     /**
      Returns a wrapper for a sync provider that guarantees serialization.
 

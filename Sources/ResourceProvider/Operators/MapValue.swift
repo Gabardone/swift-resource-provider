@@ -143,12 +143,12 @@ public extension SyncProvider where Failure == Never {
     }
 }
 
-// MARK: - Sendable SyncProvider Map Value
+// MARK: - SyncProvider & Sendable Map Value
 
 private struct ValueMappingNeverFailureSendableSyncProvider<
-    Mapped: SendableSyncProvider,
+    Mapped: SyncProvider & Sendable,
     Value
->: SendableSyncProvider {
+>: SyncProvider & Sendable {
     typealias ValueMapper = @Sendable (Mapped.Value, ID) -> Value
 
     var mapped: Mapped
@@ -160,7 +160,7 @@ private struct ValueMappingNeverFailureSendableSyncProvider<
     }
 }
 
-public extension SendableSyncProvider {
+public extension SyncProvider where Self: Sendable {
     /**
      Maps the calling provider's `Value` type to a different type.
 
@@ -180,9 +180,9 @@ public extension SendableSyncProvider {
 }
 
 private struct ValueMappingSameFailureSendableSyncProvider<
-    Mapped: SendableSyncProvider,
+    Mapped: SyncProvider & Sendable,
     Value
->: SendableSyncProvider {
+>: SyncProvider & Sendable {
     typealias ValueMapper = @Sendable (Mapped.Value, ID) throws(Mapped.Failure) -> Value
 
     var mapped: Mapped
@@ -194,7 +194,7 @@ private struct ValueMappingSameFailureSendableSyncProvider<
     }
 }
 
-public extension SendableSyncProvider {
+public extension SyncProvider where Self: Sendable {
     /**
      Maps the calling provider's `Value` type to a different type.
 
@@ -215,10 +215,10 @@ public extension SendableSyncProvider {
 }
 
 private struct ValueMappingAnyFailureSendableSyncProvider<
-    Mapped: SendableSyncProvider,
+    Mapped: SyncProvider & Sendable,
     Value,
     ValueMappingError: Error
->: SendableSyncProvider {
+>: SyncProvider & Sendable {
     typealias ValueMapper = @Sendable (Mapped.Value, ID) throws(ValueMappingError) -> Value
 
     var mapped: Mapped
@@ -230,7 +230,7 @@ private struct ValueMappingAnyFailureSendableSyncProvider<
     }
 }
 
-public extension SendableSyncProvider {
+public extension SyncProvider where Self: Sendable {
     /**
      Maps the calling provider's `Value` type to a different type.
 
@@ -253,10 +253,10 @@ public extension SendableSyncProvider {
 }
 
 private struct ValueMappingNewFailureSendableSyncProvider<
-    Mapped: SendableSyncProvider,
+    Mapped: SyncProvider & Sendable,
     Value,
     ValueMappingError: Error
->: SendableSyncProvider where Mapped.Failure == Never {
+>: SyncProvider, Sendable where Mapped.Failure == Never {
     typealias ValueMapper = @Sendable (Mapped.Value, ID) throws(ValueMappingError) -> Value
 
     var mapped: Mapped
@@ -268,7 +268,7 @@ private struct ValueMappingNewFailureSendableSyncProvider<
     }
 }
 
-public extension SendableSyncProvider where Failure == Never {
+public extension SyncProvider where Self: Sendable, Failure == Never {
     /**
      Maps the calling provider's `Value` type to a different type.
 

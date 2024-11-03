@@ -7,7 +7,7 @@
 
 private struct UncheckedSendableSyncProvider<
     P: SyncProvider
->: SendableSyncProvider, @unchecked Sendable {
+>: SyncProvider, @unchecked Sendable {
     var syncProvider: P
 
     func value(for id: P.ID) throws(P.Failure) -> P.Value {
@@ -32,7 +32,7 @@ extension SyncProvider {
     }
 }
 
-extension SendableSyncProvider {
+extension SyncProvider where Self: Sendable {
     /**
      Forces a non-sendable sync provider into being `Sendable`.
 
