@@ -2,9 +2,10 @@
 
 A modular resource fetching and management system.
 
-This is like Combine, but for getting things instead of receiving them. It makes for an easy to understand, common
-abstraction of getting something repeatably based on a series of unique characteristics, as well as enabling more
-sophisticated workflows including but not limited to caching steps.
+This little library takes a Combine-like approach to getting things with an identifier. It makes for an easy to
+understand surface for this common abstraction of getting something repeatably based on a series of unique
+characteristics while enabling for progressively adding sophistication to the implementation in composable steps,
+including but not limited to caching steps.
 
 As with many similar frameworks and language facilities, this doesn't make these complicated issues simple but it ought
 to help organize them in a far more modular and testable way.
@@ -21,8 +22,17 @@ before:
 - The image URLs are stable:
   - URL uniquely identifies an image.
   - Image pointed at by a given URL will not change.
-- Download may fail because network or because backend.
+- Download may fail because network or because backend or because “software amirite”.
 - You want to display the UI already and update the images when they arrive.
+
+We are also assuming that the image type is either packaged in the ID type used through the app or that they are all
+the same type. Either way we have a builder method as follows:
+
+```swift
+extension CGImage {
+    static func make(from data: Data, with id: ID) throws -> CGImage { … }
+}
+``` 
 
 This library won't help you with displaying _good_ UI while you wait for image downloads. You better convince your
 backend workmates to send in some media metadata like the image size. But as for a reasonably efficient fetch and cache
@@ -31,15 +41,14 @@ system for the images you could be writing something like _this_:
 ```swift
 import ResourceProvider
 
+// Papering over the specifics of error reporting for this example.
 struct ImageConversionError: Error {}
 
-func makeImageProvider() -> ThrowingAsyncProvider<URL, UIImage> {
+func makeImageProvider() -> ThrowingAsyncProvider<URL, CGImage> {
     Provider.networkDataSource()
-        .mapValue { data in
-            guard let image = UIImage(data: data) else {
-                throw ImageConversionError()
-            }
-
+        .mapID(\.url)
+        .mapValue { data, id in
+            let image = try CGImage.make(from: data, with: id)
             return (data, image)
         }
         .cache(LocalFileDataCache()

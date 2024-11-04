@@ -20,7 +20,7 @@ public extension SyncCache {
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
      - Returns: A cache that takes `OtherValue` as its `Value` type.
      */
-    func mapValue<OtherValue>(
+    func mapValueToStorage<OtherValue>(
         toStorage: @escaping (OtherValue) -> Value?,
         fromStorage: @escaping (Value, ID) -> OtherValue?
     ) -> some SyncCache<ID, OtherValue> {
@@ -51,8 +51,8 @@ public extension SyncCache where Self: Sendable, ID: Sendable {
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
      - Returns: A cache that takes `OtherValue` as its `Value` type.
      */
-    func mapValue<OtherValue: Sendable>(
-        toStorage: @escaping @Sendable (OtherValue) async -> Value?,
+    func mapValueToStorage<OtherValue: Sendable>(
+        _ toStorage: @escaping @Sendable (OtherValue) async -> Value?,
         fromStorage: @escaping @Sendable (Value, ID) async -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
         AnyAsyncCache { id in
@@ -84,7 +84,7 @@ public extension AsyncCache {
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
      - Returns: A cache that takes `OtherValue` as its `Value` type.
      */
-    func mapValue<OtherValue: Sendable>(
+    func mapValueToStorage<OtherValue: Sendable>(
         toStorage: @escaping @Sendable (OtherValue) -> Value?,
         fromStorage: @escaping @Sendable (Value, ID) -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
@@ -113,7 +113,7 @@ public extension AsyncCache {
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
      - Returns: A cache that takes `OtherValue` as its `Value` type.
      */
-    func mapValue<OtherValue: Sendable>(
+    func mapValueToStorage<OtherValue: Sendable>(
         toStorage: @escaping @Sendable (OtherValue) async -> Value?,
         fromStorage: @escaping @Sendable (Value, ID) async -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {

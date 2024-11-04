@@ -57,7 +57,7 @@ struct SyncProviderTest {
                     // You're usually going to need a `mapID` to use a `LocalFileDataCache`
                     FilePath(url.lastPathComponent)
                 }
-                .mapValue { data, _ in
+                .mapValueToStorage { data, _ in
                     // We're only carrying the image for validation.
                     data
                 } fromStorage: { data, _ in
