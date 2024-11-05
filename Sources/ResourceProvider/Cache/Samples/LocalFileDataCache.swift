@@ -14,7 +14,8 @@ import System
  The cache is hardcoded to `ID == FilePath` and `Value == Data`. You will normally want to convert to/from your
  provider's `ID` and `Value` using `mapID` and `mapValue` respectively.
 
- The cache is synchronous and it can also can be used safely from a concurrent context.
+ The cache is synchronous but it can also can be used safely from a concurrent context as long as the same file isn't
+ accessed concurrently. The use of `.coordinated()` somewhere down the provider operator chain should guarantee it.
 
  Availability limited by `FilePath` API only being declared in later OS versions.
  */
