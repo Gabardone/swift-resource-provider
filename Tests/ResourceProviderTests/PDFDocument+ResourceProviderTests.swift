@@ -13,6 +13,6 @@ extension PDFDocument {
 
     static let sampleDocumentData: Data = {
         let sampleDocumentURL = Bundle.module.url(forResource: "SampleDocument", withExtension: "pdf")!
-        return try! Data(contentsOf: sampleDocumentURL)
+        return try! Data(contentsOf: sampleDocumentURL) // swiftlint:disable:this force_try
     }()
 }

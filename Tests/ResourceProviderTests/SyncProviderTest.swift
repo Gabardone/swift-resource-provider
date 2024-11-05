@@ -203,6 +203,7 @@ struct SyncProviderTest {
         #expect(networkSourceHappened && (localFileCacheFetchHappened.fulfillments == 1) && inMemoryFetchHappened)
     }
 
+    // swiftlint:disable:next function_body_length
     @Test func remoteDataIsBadButRetryWorks() throws {
         var networkSourceHappened = 0
         let expectedNetworkSourceFulfillments = 2

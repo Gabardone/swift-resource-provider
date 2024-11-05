@@ -102,7 +102,7 @@ public extension AsyncProvider where ID: Sendable, Value: Sendable {
 
      This modifier doesn't make any other guarantees when it comes to concurrent behavior. You should usually finish
      off an asynchronous provider with this modifier. If handling a synchronous one, use `serialized` instead.
-     - TODO: Mention that we're losing typed errors because of `Task` library limitations.
+     - Todo: Mention that we're losing typed errors because of `Task` library limitations.
      - Returns: A provider that ensures that multiple overlapping requests for the same `id` use the same task.
      */
     func coordinated() -> some AsyncProvider<ID, Value, any Error> {

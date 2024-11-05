@@ -92,6 +92,7 @@ public extension SyncCache where Self: Sendable {
     }
 }
 
+// swiftlint:disable:next type_name
 private struct StoreValueForSideEffectedSendableSyncCache<Effected: SyncCache & Sendable>: SyncCache, Sendable {
     typealias ID = Effected.ID
 

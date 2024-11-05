@@ -13,7 +13,7 @@ extension CGImage {
     static let sampleImageURL = Bundle.module.url(forResource: "SampleImage", withExtension: "jpeg")!
 
     // Does not `throw` as it's expected for the test setup to work.
-    static let sampleImageData: Data = try! Data(contentsOf: sampleImageURL)
+    static let sampleImageData: Data = try! Data(contentsOf: sampleImageURL) // swiftlint:disable:this force_try
 
     // This shouldn't parse into any CGImage
     static let badImageData = Data(count: 16)
