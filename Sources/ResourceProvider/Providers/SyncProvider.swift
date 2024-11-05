@@ -19,7 +19,7 @@ public protocol SyncProvider<ID, Value, Failure> {
 
 public extension SyncProvider {
     func eraseToAnySyncProvider() -> AnySyncProvider<ID, Value, Failure> {
-        .init(valueForID: self.value(for:))
+        .init(valueForID: value(for:))
     }
 }
 

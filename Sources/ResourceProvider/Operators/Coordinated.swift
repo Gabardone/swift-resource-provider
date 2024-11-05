@@ -79,7 +79,7 @@ extension ThrowingAsyncProviderCoordinator: AsyncProvider {
 
     nonisolated
     func value(for id: Coordinated.ID) async throws -> Coordinated.Value {
-        return try await taskFor(id: id).value
+        try await taskFor(id: id).value
     }
 }
 
@@ -96,7 +96,7 @@ public extension AsyncProvider where Failure == Never, ID: Sendable, Value: Send
     }
 }
 
-public extension AsyncProvider where ID: Sendable, Value: Sendable{
+public extension AsyncProvider where ID: Sendable, Value: Sendable {
     /**
      Ensures that the provider will not do the same work twice when the same id is requested concurrently.
 

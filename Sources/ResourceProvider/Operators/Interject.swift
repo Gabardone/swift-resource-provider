@@ -80,7 +80,7 @@ private struct InterjectingAnyFailureSyncProvider<Interjected: SyncProvider, Int
 
     var interjector: Interjector
 
-    func value(for id: Interjected.ID) throws(any Error) -> Interjected.Value {
+    func value(for id: Interjected.ID) throws -> Interjected.Value {
         if let interjection = try interjector(id) {
             interjection
         } else {
@@ -228,7 +228,7 @@ private struct InterjectingAnyFailureSendableSyncProvider<
 
     var interjector: Interjector
 
-    func value(for id: Interjected.ID) throws(any Error) -> Interjected.Value {
+    func value(for id: Interjected.ID) throws -> Interjected.Value {
         if let interjection = try interjector(id) {
             interjection
         } else {
@@ -360,7 +360,7 @@ private struct SyncInterjectingAnyFailureAsyncProvider<
 
     var interjector: Interjector
 
-    func value(for id: Interjected.ID) async throws(any Error) -> Interjected.Value {
+    func value(for id: Interjected.ID) async throws -> Interjected.Value {
         if let interjection = try interjector(id) {
             interjection
         } else {
@@ -482,7 +482,7 @@ private struct AsyncInterjectingAnyFailureAsyncProvider<
 
     var interjector: Interjector
 
-    func value(for id: Interjected.ID) async throws(any Error) -> Interjected.Value {
+    func value(for id: Interjected.ID) async throws -> Interjected.Value {
         if let interjection = try await interjector(id) {
             interjection
         } else {

@@ -6,7 +6,6 @@
 //
 
 import CoreGraphics
-import ImageIO
 import Foundation
 
 extension CGImage {

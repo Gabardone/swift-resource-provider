@@ -14,11 +14,11 @@
  Swift won't let you use this `typealias` in many places, but it's useful for `some SendableSyncProvider<…>`
  as a return type for a generic function.
  */
-public typealias SendableSyncProvider<I, V, F> = SyncProvider<I, V, F> & Sendable
+public typealias SendableSyncProvider<I, V, F> = Sendable & SyncProvider<I, V, F>
 
 public extension SyncProvider where Self: Sendable {
     func eraseToAnySendableSyncProvider() -> AnySendableSyncProvider<ID, Value, Failure> {
-        .init(valueForID: self.value(for:))
+        .init(valueForID: value(for:))
     }
 }
 

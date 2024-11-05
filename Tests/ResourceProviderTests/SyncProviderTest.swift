@@ -122,7 +122,7 @@ struct SyncProviderTest {
             #expect(value.dataRepresentation()?.count == expectedDocumentData?.count)
         })
 
-        let pdfDocument = try  documentProvider.value(for: .dummy)
+        let pdfDocument = try documentProvider.value(for: .dummy)
 
         #expect((localFileFetchHappened.fulfillments == 1) && inMemoryFetchHappened && inMemoryStoreHappened)
         #expect(pdfDocument.dataRepresentation()?.count == expectedDocumentData?.count)
@@ -166,11 +166,11 @@ struct SyncProviderTest {
         let pdfDocument = try documentProvider.value(for: .dummy)
 
         #expect(
-            networkSourceHappened &&
-            (localFileCacheFetchHappened.fulfillments == 1) &&
-            (localFileCacheStoreHappened.fulfillments == 1) &&
-            inMemoryFetchHappened &&
-            inMemoryStoreHappened
+            networkSourceHappened
+                && (localFileCacheFetchHappened.fulfillments == 1)
+                && (localFileCacheStoreHappened.fulfillments == 1)
+                && inMemoryFetchHappened
+                && inMemoryStoreHappened
         )
         #expect(pdfDocument.dataRepresentation()?.count == expectedDocumentData?.count)
     }
@@ -253,11 +253,11 @@ struct SyncProviderTest {
         let pdfDocument = try documentProvider.value(for: .dummy)
 
         #expect(
-            (networkSourceHappened == expectedNetworkSourceFulfillments) &&
-            (localFileCacheFetchHappened.fulfillments == expectedLocalFileCacheFetchFulfillments) &&
-            (localFileCacheStoreHappened.fulfillments == 1) &&
-            (inMemoryFetchHappened == expectedInMemoryFetchFulfillments) &&
-            inMemoryStoreHappened
+            (networkSourceHappened == expectedNetworkSourceFulfillments)
+                && (localFileCacheFetchHappened.fulfillments == expectedLocalFileCacheFetchFulfillments)
+                && (localFileCacheStoreHappened.fulfillments == 1)
+                && (inMemoryFetchHappened == expectedInMemoryFetchFulfillments)
+                && inMemoryStoreHappened
         )
         #expect(pdfDocument.dataRepresentation()?.count == expectedDocumentData?.count)
     }

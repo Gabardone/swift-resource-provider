@@ -24,8 +24,8 @@ public struct LocalFileDataCache {
     private let storageDirectory: FilePath
 
     // Per docs, safe to use multi-threaded as long as there's not a delegate.
-    nonisolated(unsafe)
-    private let fileManager: FileManager
+    private nonisolated(unsafe)
+    let fileManager: FileManager
 
     /**
      Initialize a local file data cache.

@@ -17,7 +17,7 @@ private struct UncheckedSendableSyncCache<C: SyncCache>: SyncCache, @unchecked S
     }
 }
 
-extension SyncCache {
+public extension SyncCache {
     /**
      Forces a non-sendable sync provider into being `Sendable`. Use at your own risk.
 
@@ -29,19 +29,19 @@ extension SyncCache {
      involves `@unchecked Sendable` wrappers that's on you, the developer—.
      - Returns: An IKWID `SyncProvider` that has the exact same behavior as the caller but
      */
-    public func forceSendable() -> some SendableSyncCache<ID, Value> {
+    func forceSendable() -> some SendableSyncCache<ID, Value> {
         UncheckedSendableSyncCache(syncCache: self)
     }
 }
 
-extension SyncCache where Self: Sendable {
+public extension SyncCache where Self: Sendable {
     /**
      Forces a non-sendable sync provider into being `Sendable`.
 
      In case you are using `forceSendable` in a generic context —So Meta— this override skips the wrapper when you
      actually apply it to a `SyncProvider` that is already `Sendable`.
      */
-    public func forceSendable() -> some SendableSyncCache<ID, Value> {
+    func forceSendable() -> some SendableSyncCache<ID, Value> {
         self
     }
 }

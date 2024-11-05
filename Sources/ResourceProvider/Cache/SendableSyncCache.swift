@@ -5,10 +5,10 @@
 //  Created by Óscar Morales Vivó on 10/21/24.
 //
 
-public typealias SendableSyncCache<I, V> = SyncCache<I, V> & Sendable
+public typealias SendableSyncCache<I, V> = Sendable & SyncCache<I, V>
 
-extension SyncCache where Self: Sendable {
-    public func eraseToAnySendableSyncCache() -> AnySendableSyncCache<ID, Value> {
-        AnySendableSyncCache(valueForID: self.value(for:), storeValueForID: self.store(value:for:))
+public extension SyncCache where Self: Sendable {
+    func eraseToAnySendableSyncCache() -> AnySendableSyncCache<ID, Value> {
+        AnySendableSyncCache(valueForID: value(for:), storeValueForID: store(value:for:))
     }
 }

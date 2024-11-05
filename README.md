@@ -73,10 +73,7 @@ func makeImageProvider() -> some AsyncProvider<ImageID, CGImage, any Error> {
         .mapValue { _, image in
             image
         }
-        .cache(WeakObjectCache()
-            .forceSendable()
-            .serialized()
-        )
+        .cache(WeakObjectCache().makeAsync())
         .coordinated()
 }
 ```
@@ -163,10 +160,7 @@ concurrently used by the rest of the provider.
 We're done with wrangling raw `Data` from now on, so we just filter it out and pass down the `UIImage`.
 
 ```swift
-.cache(WeakObjectCache()
-    .forceSendable()
-    .serialized()
-)
+.cache(WeakObjectCache().makeAsync())
 ```
 
 A weak objects cache means we'll have instant access to any object that someone else has fetched before and is already
@@ -175,8 +169,8 @@ work best. `NSCache` sounds good but is rarely what you actually want.
 
 Because it's built using old, non-concurrency-friendly Foundation types, `WeakObjectCache` is not `Sendable`, trying to
 use it concurrently would cause data races. But because it just performs a dictionary lookout we can wrap it in an
-`actor` which guarantees its serial use without introducing real world performance issues. First we must use
-`forceSendable` in an "I know what I'm doing" way, then apply `.serialized()` to it.
+`actor` which guarantees its serial use without introducing real world performance issues. To make it simpler to deal
+with all of this correctly there is a `makeAsync()` method declared that does all of that.
 
 ```swift
 .coordinated()
@@ -221,10 +215,7 @@ func makeThumbnailProvider() -> some AsyncProvider<ThumbnailID, CGImage, any Err
                 return image
             }
         }
-        .cache(WeakObjectCache()
-            .forceSendable()
-            .serialized()
-        )
+        .cache(WeakObjectCache().makeAsync())
         .coordinated()
 }
 ```

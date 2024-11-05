@@ -47,6 +47,6 @@ public extension Provider {
 
 public extension AsyncProvider {
     func eraseToAnyAsyncProvider() -> AnyAsyncProvider<ID, Value, Failure> {
-        AnyAsyncProvider(valueForID: self.value(for:))
+        AnyAsyncProvider(valueForID: value(for:))
     }
 }

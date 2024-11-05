@@ -20,7 +20,6 @@ public struct AnySendableSyncCache<ID: Hashable, Value>: Sendable {
 
     /// Implements `AsyncCache.store(value:id:)`
     public let storeValueForID: StoreValueForID
-
 }
 
 extension AnySendableSyncCache: SyncCache {
@@ -33,8 +32,8 @@ extension AnySendableSyncCache: SyncCache {
     }
 }
 
-extension AnySendableSyncCache {
-    public func eraseToAnySendableSyncCache() -> AnySendableSyncCache<ID, Value> {
+public extension AnySendableSyncCache {
+    func eraseToAnySendableSyncCache() -> AnySendableSyncCache<ID, Value> {
         self
     }
 }
