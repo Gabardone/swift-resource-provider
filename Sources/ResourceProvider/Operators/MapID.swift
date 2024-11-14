@@ -10,11 +10,9 @@ import Foundation
 // MARK: - SyncProvider Map ID
 
 private struct IDMappingSyncProvider<Mapped: SyncProvider, ID: Hashable>: SyncProvider {
-    typealias IDMapper = (ID) -> Mapped.ID
-
     var mapped: Mapped
 
-    var idMapper: IDMapper
+    var idMapper: (ID) -> Mapped.ID
 
     func value(for id: ID) throws(Mapped.Failure) -> Mapped.Value {
         try mapped.value(for: idMapper(id))

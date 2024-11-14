@@ -35,7 +35,7 @@ extension WeakObjectCache: SyncCache {
 
 public extension WeakObjectCache where ID: Sendable, Value: Sendable {
     /**
-     Quick conversion to `AsyncCache`
+     Quick, safe conversion to ``AsyncCache``
 
      A weak object cache is not `Sendable` since concurrent access to its internal state would cause data races, but
      if it's wrapped in an actor and thus run serially it can safely be accessed asynchronously.

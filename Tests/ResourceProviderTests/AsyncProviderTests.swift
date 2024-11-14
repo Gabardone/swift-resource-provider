@@ -44,9 +44,9 @@ final class AsyncProviderTests: XCTestCase {
                     // You're usually going to need a `mapID` to use a `LocalFileDataCache`
                     FilePath(url.lastPathComponent)
                 }
-                .mapValueToStorage { data, _ in
-                    // We're only carrying the image for validation.
-                    data
+                .mapValueToStorage { dataAndImage, _ in
+                    // We're only carrying the data for storage.
+                    dataAndImage.0
                 } fromStorage: { data, _ in
                     // It's ok to convert again since if we're here it means we don't have it in memory.
                     (try? CGImage.makePNGImage(from: data)).map { (data, $0) }

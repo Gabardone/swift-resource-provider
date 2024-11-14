@@ -29,23 +29,13 @@ public extension SyncCache where Self: Sendable, ID: Sendable, Value: Sendable {
     /**
      Returns a wrapper for a (`Sendable`) sync cache that guarantees serialization.
 
-     If a sync cache needs to be used in an `async` context and it doesn't play well with concurrency —usually because
-     you want to avoid data races with its state management— you will want to wrap it in one of these before attaching
-     to a provider.
+     If a sync cache needs to be used in an `async` context and it plays well with concurrency. you will want to use
+     this operator to make it into an ``AsyncCache``.
 
-     This is not particularly problematic for very fast caches i.e. in-memory ones. Normally you will be using a
-     `Dictionary` or similar collection to keep your stored values around and those are both fast and do not play well
-     with concurrency.
-
-     > Note: Due to the virality of sendability in Swift, the adapter requires the cache itself and its data types to be
-     > `Sendable. Use the `map` methods, non-`Sendable` type wrappers and the `forceSendable` operator to make your
-     > cache comply if neeeded.
-     >
-     > Unless you need to deal with old framework types the above is generally not a deal breaker for this kind
-     > of work. If you can pinky-promise that an old fashioned framework reference type won't be mutated and you know it
-     > does lazy initialization of its internal resources, if any, in a concurrent-safe manner then you can use an
-     > `@unchecked Sendable` wrapper to pass it around.
-     - Returns: An `async` cache version of the calling `SyncCache` that runs its calls serially.
+     The `Sendable` requirement for the caller tells the compiler that it's safe to treat the caller concurrently and in
+     general it _will_ be safe unless you just `@unchecked Sendable` or otherwise forced adoption of the marker protocol
+     but failed to get the implementation to actually be safe in concurrent use.
+     - Returns: An `async` cache version of the calling ``SyncCache`` that runs its calls serially.
      */
     func concurrent() -> some AsyncCache<ID, Value> {
         ConcurrentSyncCache(concurring: self)

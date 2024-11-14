@@ -57,12 +57,11 @@ struct SyncProviderTest {
                     // You're usually going to need a `mapID` to use a `LocalFileDataCache`
                     FilePath(url.lastPathComponent)
                 }
-                .mapValueToStorage { data, _ in
+                .mapValueToStorage { dataAndImage, _ in
                     // We're only carrying the image for validation.
-                    data
+                    dataAndImage.0
                 } fromStorage: { data, _ in
                     // It's ok to convert again since if we're here it means we don't have it in memory.
-
                     PDFDocument(data: data).map { (data, $0) }
                 }
             )

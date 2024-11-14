@@ -7,56 +7,65 @@
 
 // MARK: - SyncCache Side Effects
 
-private struct ValueForSideEffectedSyncCache<Effected: SyncCache>: SyncCache {
-    typealias ID = Effected.ID
-
-    typealias Value = Effected.Value
-
-    typealias ValueForSideEffect = (Value?, ID) -> Void
-
+private struct ValueForSideEffectedSyncCache<Effected: SyncCache> {
     var sideEffected: Effected
 
-    var valueForSideEffect: ValueForSideEffect?
+    var valueForSideEffect: (Value?, ID) -> Void
+}
 
-    func value(for id: ID) -> Value? {
+extension ValueForSideEffectedSyncCache: SyncCache {
+    func value(for id: Effected.ID) -> Effected.Value? {
         let result = sideEffected.value(for: id)
-        valueForSideEffect?(result, id)
+        valueForSideEffect(result, id)
         return result
     }
 
-    func store(value: Value, for id: ID) {
+    func store(value: Effected.Value, for id: Effected.ID) {
         sideEffected.store(value: value, for: id)
     }
 }
 
 public extension SyncCache {
+    /**
+     Applies a side effect when retrieving a value from the calling ``SyncCache``.
+
+     The side effect is applied _after_ the retrieval, and it is passed both the retrieved value and the id used to do
+     so.
+     - Parameter sideEffect: A side effect that will be invoked when a value is retrieved from the cache, with that
+     value and the id used to fetch it as parameters.
+     - Returns: a cache that acts just like the caller but also has a side effect on value retrieval.
+     */
     func valueForSideEffect(sideEffect: @escaping (Value?, ID) -> Void) -> some SyncCache<ID, Value> {
         ValueForSideEffectedSyncCache(sideEffected: self, valueForSideEffect: sideEffect)
     }
 }
 
-private struct StoreValueForSideEffectedSyncCache<Effected: SyncCache>: SyncCache {
-    typealias ID = Effected.ID
-
-    typealias Value = Effected.Value
-
-    typealias StoreValueForSideEffect = (Value, ID) -> Void
-
+private struct StoreValueForSideEffectedSyncCache<Effected: SyncCache> {
     var sideEffected: Effected
 
-    var storeValueForSideEffect: StoreValueForSideEffect?
+    var storeValueForSideEffect: (Effected.Value, Effected.ID) -> Void
+}
 
-    func value(for id: ID) -> Value? {
+extension StoreValueForSideEffectedSyncCache: SyncCache {
+    func value(for id: Effected.ID) -> Effected.Value? {
         sideEffected.value(for: id)
     }
 
-    func store(value: Value, for id: ID) {
+    func store(value: Effected.Value, for id: Effected.ID) {
         sideEffected.store(value: value, for: id)
-        storeValueForSideEffect?(value, id)
+        storeValueForSideEffect(value, id)
     }
 }
 
 public extension SyncCache {
+    /**
+     Applies a side effect when storing a value in the calling ``SyncCache``.
+
+     The side effect is applied _after_ the storage, and it is passed both the stored value and the id for that value.
+     - Parameter sideEffect: A side effect that will be invoked right after a value is stored into the cache, with that
+     value and the id used to store it as parameters.
+     - Returns: a cache that acts just like the caller but also has a side effect on value storage.
+     */
     func storeValueForSideEffect(sideEffect: @escaping (Value, ID) -> Void) -> some SyncCache<ID, Value> {
         StoreValueForSideEffectedSyncCache(sideEffected: self, storeValueForSideEffect: sideEffect)
     }
@@ -64,78 +73,94 @@ public extension SyncCache {
 
 // MARK: - SendableSyncCache Side Effects
 
-private struct ValueForSideEffectedSendableSyncCache<Effected: SyncCache & Sendable>: SyncCache, Sendable {
-    typealias ID = Effected.ID
-
-    typealias Value = Effected.Value
-
-    typealias ValueForSideEffect = @Sendable (Value?, ID) -> Void
-
+private struct ValueForSideEffectedSendableSyncCache<Effected: SyncCache & Sendable>: Sendable {
     var sideEffected: Effected
 
-    var valueForSideEffect: ValueForSideEffect?
+    var valueForSideEffect: @Sendable (Effected.Value?, Effected.ID) -> Void?
+}
 
-    func value(for id: ID) -> Value? {
+extension ValueForSideEffectedSendableSyncCache: SyncCache {
+    func value(for id: Effected.ID) -> Effected.Value? {
         let result = sideEffected.value(for: id)
-        valueForSideEffect?(result, id)
+        valueForSideEffect(result, id)
         return result
     }
 
-    func store(value: Value, for id: ID) {
+    func store(value: Effected.Value, for id: Effected.ID) {
         sideEffected.store(value: value, for: id)
     }
 }
 
 public extension SyncCache where Self: Sendable {
-    func valueForSideEffect(sideEffect: @escaping @Sendable (Value?, ID) -> Void) -> some SyncCache<ID, Value> {
+    /**
+     Applies a side effect when retrieving a value from the calling `Sendable` ``SyncCache``.
+
+     The side effect is applied _after_ the retrieval, and it is passed both the retrieved value and the id used to do
+     so.
+
+     While the declaration requires neither `ID` nor `Value` to be `Sendable`, in practice they'll almost always have to
+     be.
+     - Parameter sideEffect: A side effect that will be invoked when a value is retrieved from the cache, with that
+     value and the id used to fetch it as parameters.
+     - Returns: a cache that acts just like the caller but also has a side effect on value retrieval.
+     */
+    func valueForSideEffect(
+        sideEffect: @escaping @Sendable (Value?, ID) -> Void
+    ) -> some SyncCache<ID, Value> & Sendable {
         ValueForSideEffectedSendableSyncCache(sideEffected: self, valueForSideEffect: sideEffect)
     }
 }
 
 // swiftlint:disable:next type_name
-private struct StoreValueForSideEffectedSendableSyncCache<Effected: SyncCache & Sendable>: SyncCache, Sendable {
-    typealias ID = Effected.ID
-
-    typealias Value = Effected.Value
-
-    typealias StoreValueForSideEffect = @Sendable (Value, ID) -> Void
-
+private struct StoreValueForSideEffectedSendableSyncCache<Effected: SyncCache & Sendable>: Sendable {
     var sideEffected: Effected
 
-    var storeValueForSideEffect: StoreValueForSideEffect?
+    var storeValueForSideEffect: @Sendable (Effected.Value, Effected.ID) -> Void
+}
 
-    func value(for id: ID) -> Value? {
+extension StoreValueForSideEffectedSendableSyncCache: SyncCache {
+    func value(for id: Effected.ID) -> Effected.Value? {
         sideEffected.value(for: id)
     }
 
-    func store(value: Value, for id: ID) {
+    func store(value: Effected.Value, for id: Effected.ID) {
         sideEffected.store(value: value, for: id)
-        storeValueForSideEffect?(value, id)
+        storeValueForSideEffect(value, id)
     }
 }
 
 public extension SyncCache where Self: Sendable {
-    func storeValueForSideEffect(sideEffect: @escaping @Sendable (Value, ID) -> Void) -> some SyncCache<ID, Value> {
+    /**
+     Applies a side effect when storing a value in the calling `Sendable` ``SyncCache``.
+
+     The side effect is applied _after_ the storage, and it is passed both the stored value and the id for that value.
+
+     While the declaration requires neither `ID` nor `Value` to be `Sendable`, in practice they'll almost always have to
+     be.
+     - Parameter sideEffect: A side effect that will be invoked right after a value is stored into the cache, with that
+     value and the id used to store it as parameters.
+     - Returns: a cache that acts just like the caller but also has a side effect on value storage.
+     */
+
+    func storeValueForSideEffect(
+        sideEffect: @escaping @Sendable (Value, ID) -> Void
+    ) -> some SyncCache<ID, Value> & Sendable {
         StoreValueForSideEffectedSendableSyncCache(sideEffected: self, storeValueForSideEffect: sideEffect)
     }
 }
 
 // MARK: - AsyncCache Sync Side Effects
 
-private struct SyncValueForSideEffectedAsyncCache<Effected: AsyncCache>: AsyncCache {
-    typealias ID = Effected.ID
-
-    typealias Value = Effected.Value
-
-    typealias ValueForSideEffect = @Sendable (Value?, ID) -> Void
-
+private struct SyncValueForSideEffectedAsyncCache<Effected: AsyncCache> {
     var sideEffected: Effected
 
-    var valueForSideEffect: ValueForSideEffect?
+    var valueForSideEffect: @Sendable (Effected.Value?, Effected.ID) -> Void
+}
 
-    func value(for id: ID) async -> Value? {
+extension SyncValueForSideEffectedAsyncCache: AsyncCache {
+    func value(for id: Effected.ID) async -> Effected.Value? {
         let result = await sideEffected.value(for: id)
-        valueForSideEffect?(result, id)
+        valueForSideEffect(result, id)
         return result
     }
 
@@ -145,33 +170,46 @@ private struct SyncValueForSideEffectedAsyncCache<Effected: AsyncCache>: AsyncCa
 }
 
 public extension AsyncCache {
+    /**
+     Applies a synchronous side effect when retrieving a value from the calling ``AsyncCache``.
+
+     The side effect is applied _after_ the retrieval, and it is passed both the retrieved value and the id used to do
+     so.
+     - Parameter sideEffect: A side effect that will be invoked when a value is retrieved from the cache, with that
+     value and the id used to fetch it as parameters.
+     - Returns: a cache that acts just like the caller but also has a side effect on value retrieval.
+     */
     func valueForSideEffect(sideEffect: @escaping @Sendable (Value?, ID) -> Void) -> some AsyncCache<ID, Value> {
         SyncValueForSideEffectedAsyncCache(sideEffected: self, valueForSideEffect: sideEffect)
     }
 }
 
-private struct SyncStoreValueForSideEffectedAsyncCache<Effected: AsyncCache>: AsyncCache {
-    typealias ID = Effected.ID
-
-    typealias Value = Effected.Value
-
-    typealias StoreValueForSideEffect = @Sendable (Value, ID) -> Void
-
+private struct SyncStoreValueForSideEffectedAsyncCache<Effected: AsyncCache> {
     var sideEffected: Effected
 
-    var storeValueForSideEffect: StoreValueForSideEffect?
+    var storeValueForSideEffect: @Sendable (Effected.Value, Effected.ID) -> Void
+}
 
-    func value(for id: ID) async -> Value? {
+extension SyncStoreValueForSideEffectedAsyncCache: AsyncCache {
+    func value(for id: Effected.ID) async -> Effected.Value? {
         await sideEffected.value(for: id)
     }
 
-    func store(value: Value, for id: ID) async {
+    func store(value: Effected.Value, for id: Effected.ID) async {
         await sideEffected.store(value: value, for: id)
-        storeValueForSideEffect?(value, id)
+        storeValueForSideEffect(value, id)
     }
 }
 
 public extension AsyncCache {
+    /**
+     Applies a synchronous side effect when storing a value in the calling ``AsyncCache``.
+
+     The side effect is applied _after_ the storage, and it is passed both the stored value and the id for that value.
+     - Parameter sideEffect: A side effect that will be invoked right after a value is stored into the cache, with that
+     value and the id used to store it as parameters.
+     - Returns: a cache that acts just like the caller but also has a side effect on value storage.
+     */
     func storeValueForSideEffect(sideEffect: @escaping @Sendable (Value, ID) -> Void) -> some AsyncCache<ID, Value> {
         SyncStoreValueForSideEffectedAsyncCache(sideEffected: self, storeValueForSideEffect: sideEffect)
     }
@@ -179,56 +217,65 @@ public extension AsyncCache {
 
 // MARK: - AsyncCache Async Side Effects
 
-private struct AsyncValueForSideEffectedAsyncCache<Effected: AsyncCache>: AsyncCache {
-    typealias ID = Effected.ID
-
-    typealias Value = Effected.Value
-
-    typealias ValueForSideEffect = @Sendable (Value?, ID) async -> Void
-
+private struct AsyncValueForSideEffectedAsyncCache<Effected: AsyncCache> {
     var sideEffected: Effected
 
-    var valueForSideEffect: ValueForSideEffect?
+    var valueForSideEffect: @Sendable (Effected.Value?, Effected.ID) async -> Void
+}
 
-    func value(for id: ID) async -> Value? {
+extension AsyncValueForSideEffectedAsyncCache: AsyncCache {
+    func value(for id: Effected.ID) async -> Effected.Value? {
         let result = await sideEffected.value(for: id)
-        await valueForSideEffect?(result, id)
+        await valueForSideEffect(result, id)
         return result
     }
 
-    func store(value: Value, for id: ID) async {
+    func store(value: Effected.Value, for id: Effected.ID) async {
         await sideEffected.store(value: value, for: id)
     }
 }
 
 public extension AsyncCache {
+    /**
+     Applies an asynchronous side effect when retrieving a value from the calling ``AsyncCache``.
+
+     The side effect is applied _after_ the retrieval, and it is passed both the retrieved value and the id used to do
+     so.
+     - Parameter sideEffect: A side effect that will be invoked when a value is retrieved from the cache, with that
+     value and the id used to fetch it as parameters.
+     - Returns: a cache that acts just like the caller but also has a side effect on value retrieval.
+     */
     func valueForSideEffect(sideEffect: @escaping @Sendable (Value?, ID) async -> Void) -> some AsyncCache<ID, Value> {
         AsyncValueForSideEffectedAsyncCache(sideEffected: self, valueForSideEffect: sideEffect)
     }
 }
 
-private struct AsyncStoreValueForSideEffectedAsyncCache<Effected: AsyncCache>: AsyncCache {
-    typealias ID = Effected.ID
-
-    typealias Value = Effected.Value
-
-    typealias StoreValueForSideEffect = @Sendable (Value, ID) async -> Void
-
+private struct AsyncStoreValueForSideEffectedAsyncCache<Effected: AsyncCache> {
     var sideEffected: Effected
 
-    var storeValueForSideEffect: StoreValueForSideEffect?
+    var storeValueForSideEffect: @Sendable (Effected.Value, Effected.ID) async -> Void
+}
 
-    func value(for id: ID) async -> Value? {
+extension AsyncStoreValueForSideEffectedAsyncCache: AsyncCache {
+    func value(for id: Effected.ID) async -> Effected.Value? {
         await sideEffected.value(for: id)
     }
 
-    func store(value: Value, for id: ID) async {
+    func store(value: Effected.Value, for id: Effected.ID) async {
         await sideEffected.store(value: value, for: id)
-        await storeValueForSideEffect?(value, id)
+        await storeValueForSideEffect(value, id)
     }
 }
 
 public extension AsyncCache {
+    /**
+     Applies an asynchronous side effect when storing a value in the calling ``AsyncCache``.
+
+     The side effect is applied _after_ the storage, and it is passed both the stored value and the id for that value.
+     - Parameter sideEffect: A side effect that will be invoked right after a value is stored into the cache, with that
+     value and the id used to store it as parameters.
+     - Returns: a cache that acts just like the caller but also has a side effect on value storage.
+     */
     func storeValueForSideEffect(
         sideEffect: @escaping @Sendable (Value, ID) -> Void
     ) async -> some AsyncCache<ID, Value> {

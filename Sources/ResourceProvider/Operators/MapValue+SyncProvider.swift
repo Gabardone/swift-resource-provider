@@ -10,11 +10,9 @@
 // MARK: - SyncProvider Map Value
 
 private struct ValueMappingNeverFailureSyncProvider<Mapped: SyncProvider, Value>: SyncProvider {
-    typealias ValueMapper = (Mapped.Value, ID) -> Value
-
     var mapped: Mapped
 
-    var valueMapper: ValueMapper
+    var valueMapper: (Mapped.Value, ID) -> Value
 
     func value(for id: Mapped.ID) throws(Mapped.Failure) -> Value {
         try valueMapper(mapped.value(for: id), id)
@@ -41,11 +39,9 @@ public extension SyncProvider {
 }
 
 private struct ValueMappingSameFailureSyncProvider<Mapped: SyncProvider, Value>: SyncProvider {
-    typealias ValueMapper = (Mapped.Value, ID) throws(Mapped.Failure) -> Value
-
     var mapped: Mapped
 
-    var valueMapper: ValueMapper
+    var valueMapper: (Mapped.Value, ID) throws(Mapped.Failure) -> Value
 
     func value(for id: Mapped.ID) throws(Mapped.Failure) -> Value {
         try valueMapper(mapped.value(for: id), id)
@@ -73,11 +69,9 @@ public extension SyncProvider {
 }
 
 private struct ValueMappingAnyFailureSyncProvider<Mapped: SyncProvider, Value, ValueMappingError: Error>: SyncProvider {
-    typealias ValueMapper = (Mapped.Value, ID) throws(ValueMappingError) -> Value
-
     var mapped: Mapped
 
-    var valueMapper: ValueMapper
+    var valueMapper: (Mapped.Value, ID) throws(ValueMappingError) -> Value
 
     func value(for id: Mapped.ID) throws -> Value {
         try valueMapper(mapped.value(for: id), id)
@@ -111,11 +105,9 @@ private struct ValueMappingNewFailureSyncProvider<
     Value,
     ValueMappingError: Error
 >: SyncProvider where Mapped.Failure == Never {
-    typealias ValueMapper = (Mapped.Value, ID) throws(ValueMappingError) -> Value
-
     var mapped: Mapped
 
-    var valueMapper: ValueMapper
+    var valueMapper: (Mapped.Value, ID) throws(ValueMappingError) -> Value
 
     func value(for id: Mapped.ID) throws(ValueMappingError) -> Value {
         try valueMapper(mapped.value(for: id), id)
@@ -149,11 +141,9 @@ private struct ValueMappingNeverFailureSendableSyncProvider<
     Mapped: SyncProvider & Sendable,
     Value
 >: SyncProvider & Sendable {
-    typealias ValueMapper = @Sendable (Mapped.Value, ID) -> Value
-
     var mapped: Mapped
 
-    var valueMapper: ValueMapper
+    var valueMapper: @Sendable (Mapped.Value, ID) -> Value
 
     func value(for id: Mapped.ID) throws(Mapped.Failure) -> Value {
         try valueMapper(mapped.value(for: id), id)
@@ -183,11 +173,9 @@ private struct ValueMappingSameFailureSendableSyncProvider<
     Mapped: SyncProvider & Sendable,
     Value
 >: SyncProvider & Sendable {
-    typealias ValueMapper = @Sendable (Mapped.Value, ID) throws(Mapped.Failure) -> Value
-
     var mapped: Mapped
 
-    var valueMapper: ValueMapper
+    var valueMapper: @Sendable (Mapped.Value, ID) throws(Mapped.Failure) -> Value
 
     func value(for id: Mapped.ID) throws(Mapped.Failure) -> Value {
         try valueMapper(mapped.value(for: id), id)
@@ -219,11 +207,9 @@ private struct ValueMappingAnyFailureSendableSyncProvider<
     Value,
     ValueMappingError: Error
 >: SyncProvider & Sendable {
-    typealias ValueMapper = @Sendable (Mapped.Value, ID) throws(ValueMappingError) -> Value
-
     var mapped: Mapped
 
-    var valueMapper: ValueMapper
+    var valueMapper: @Sendable (Mapped.Value, ID) throws(ValueMappingError) -> Value
 
     func value(for id: Mapped.ID) throws -> Value {
         try valueMapper(mapped.value(for: id), id)
@@ -257,11 +243,9 @@ private struct ValueMappingNewFailureSendableSyncProvider<
     Value,
     ValueMappingError: Error
 >: SyncProvider, Sendable where Mapped.Failure == Never {
-    typealias ValueMapper = @Sendable (Mapped.Value, ID) throws(ValueMappingError) -> Value
-
     var mapped: Mapped
 
-    var valueMapper: ValueMapper
+    var valueMapper: @Sendable (Mapped.Value, ID) throws(ValueMappingError) -> Value
 
     func value(for id: Mapped.ID) throws(ValueMappingError) -> Value {
         try valueMapper(mapped.value(for: id), id)
