@@ -8,7 +8,7 @@
 import Foundation
 
 /**
- In-memory `weak` reference cache for objects.
+ In-memory `weak` reference type cache for objects.
 
  Since `weak` references can only be used for reference types, this cache only accepts those.
 
@@ -16,7 +16,18 @@ import Foundation
  a concurrent context.
  */
 public struct WeakObjectCache<ID: Hashable, Value: AnyObject> {
-    public init() {}
+    /**
+     The initializer optionally takes a set of preloaded values.
+
+     Mostly useful for testing.
+     - Parameter preloadedValues: A set of key/value pairs that will feed the cache. Since they are held weakly it's up
+     to the caller to keep them alive until needed.
+     */
+    public init(preloadedValues: [ID: Value] = [:]) {
+        for (key, value) in preloadedValues {
+            weakObjects.setObject(value, forKey: .init(wrapping: key))
+        }
+    }
 
     // MARK: - Stored Properties
 
@@ -39,6 +50,7 @@ public extension WeakObjectCache where ID: Sendable, Value: Sendable {
 
      A weak object cache is not `Sendable` since concurrent access to its internal state would cause data races, but
      if it's wrapped in an actor and thus run serially it can safely be accessed asynchronously.
+     - Returns: An ``AsyncCache`` wrapper for the caller.
      */
     func makeAsync() -> some AsyncCache<ID, Value> {
         forceSendable().serialized()
@@ -46,7 +58,7 @@ public extension WeakObjectCache where ID: Sendable, Value: Sendable {
 }
 
 /**
- A simple, private wrapper type so value types and reference types that don't inherit from `NSObject` can be used as
+ Simple, private wrapper type so value types and reference types that don't inherit from `NSObject` can be used as
  keys for a `NSMapTable`. An implementation detail.
  */
 private class KeyWrapper<ID: Hashable>: NSObject, NSCopying {
