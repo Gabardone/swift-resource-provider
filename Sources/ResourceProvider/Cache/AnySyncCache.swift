@@ -6,7 +6,7 @@
 //
 
 /**
- Type-erased sync cache.
+ Type-erased ``SyncCache``.
 
  This wrapper value type can be (and is) used to build up adapters for actual cache types, and can also be used to
  build mocks for testing.
@@ -26,10 +26,10 @@ public struct AnySyncCache<ID: Hashable, Value> {
         self.storeValueForID = storeValueForID
     }
 
-    /// Implements `AsyncCache.value(for:)`
+    /// Implements `SyncCache.value(for:)`
     public let valueForID: (ID) -> Value?
 
-    /// Implements `AsyncCache.store(value:id:)`
+    /// Implements `SyncCache.store(value:id:)`
     public let storeValueForID: (Value, ID) -> Void
 }
 
@@ -42,6 +42,7 @@ extension AnySyncCache: SyncCache {
         storeValueForID(value, id)
     }
 
+    /// Optimize away the wrapper when requesting erasure of an already erased value.
     public func eraseToAnyCache() -> AnySyncCache<ID, Value> {
         self
     }

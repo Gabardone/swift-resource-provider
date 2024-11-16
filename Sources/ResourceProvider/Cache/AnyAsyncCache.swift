@@ -6,14 +6,14 @@
 //
 
 /**
- Type-erased async cache.
+ Type-erased ``AsyncCache``.
 
- This wrapper value type can be (and is) used to build up adapters for actual cache types, and can also be used to
- build mocks for testing.
+ This wrapper value type can be used to build up adapters for actual cache types, build mocks for testing, and makes for
+ a good specific type to use for non-generic logic to store an async cache.
  */
 public struct AnyAsyncCache<ID: Hashable & Sendable, Value: Sendable> {
     /**
-     A type erased cache has its functionality injected as blocks.
+     A type-erased cache has its functionality injected as blocks.
      - Parameters:
        - valueForID: Block that implements `AsyncCache.value(for:)`
        - storeValueForID: Block that implements `AsyncCache.store(value:id:)`
@@ -27,10 +27,10 @@ public struct AnyAsyncCache<ID: Hashable & Sendable, Value: Sendable> {
     }
 
     /// Implements `AsyncCache.value(for:)`
-    public let valueForID: @Sendable (ID) async -> Value?
+    public var valueForID: @Sendable (ID) async -> Value?
 
     /// Implements `AsyncCache.store(value:id:)`
-    public let storeValueForID: @Sendable (Value, ID) async -> Void
+    public var storeValueForID: @Sendable (Value, ID) async -> Void
 }
 
 extension AnyAsyncCache: AsyncCache {
@@ -42,6 +42,7 @@ extension AnyAsyncCache: AsyncCache {
         await storeValueForID(value, id)
     }
 
+    /// Optimize away the wrapper when requesting erasure of an already erased value.
     public func eraseToAnyCache() -> AnyAsyncCache<ID, Value> {
         self
     }
