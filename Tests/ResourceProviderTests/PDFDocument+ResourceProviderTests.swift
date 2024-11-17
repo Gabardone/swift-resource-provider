@@ -5,6 +5,7 @@
 //  Created by Óscar Morales Vivó on 10/24/24.
 //
 
+#if canImport(PDFKit)
 import PDFKit
 
 extension PDFDocument {
@@ -16,3 +17,4 @@ extension PDFDocument {
         return try! Data(contentsOf: sampleDocumentURL) // swiftlint:disable:this force_try
     }()
 }
+#endif

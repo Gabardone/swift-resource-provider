@@ -5,6 +5,7 @@
 //  Created by Óscar Morales Vivó on 10/30/24.
 //
 
+#if canImport(PDFKit)
 import PDFKit
 import ResourceProvider
 import System
@@ -262,3 +263,4 @@ struct SyncProviderTest {
         #expect(pdfDocument.dataRepresentation()?.count == expectedDocumentData?.count)
     }
 }
+#endif
