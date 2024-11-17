@@ -22,13 +22,18 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "ResourceProvider"
+            name: "ResourceProvider",
+            swiftSettings: [
+                .swiftLanguageMode(.v6)
+            ]
         ),
         .testTarget(
             name: "ResourceProviderTests",
             dependencies: ["ResourceProvider"],
-            resources: [.process("Resources")]
+            resources: [.process("Resources")],
+            swiftSettings: [
+                .swiftLanguageMode(.v6)
+            ]
         )
-    ],
-    swiftLanguageModes: [.v5, .v6]
+    ]
 )
