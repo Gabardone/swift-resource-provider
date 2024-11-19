@@ -8,24 +8,28 @@
 import Foundation
 
 /**
- Protocol for asynchronous caches to adopt.
+ Declares the API for an asynchronous cache.
 
- The visible API of a asynchronous cache is basically as an asynchronous dictionary. Besides access being asynchronous,
- the main difference is that storing a value does not guarantee that it will be there when requested later as the cache
- is free to remove the value from storage in-between.
+ The visible API of an asynchronous cache looks basically like an asynchronous dictionary. Besides access being
+ asynchronous, the main difference with an actual dictionary is that storing a value does not guarantee that it will be
+ there when requested later as the cache is free to clear the value from storage at any point and for any reason. Or to
+ not even store it to begin with.
+
+ There is a guarantee however that _if_ a value is returned, it will be the last one that was stored using
+ ``store(value:for:)``.
  */
 public protocol AsyncCache<ID, Value>: Sendable {
-    /// The id type that uniquely identifies cached values.
+    /// The id type that uniquely identifies cached values. Needs to adopt `Sendable` to work with Swift concurrency.
     associatedtype ID: Hashable & Sendable
 
-    /// The type of value being cached.
+    /// The type of value being cached. Needs to adopt `Sendable` to work with Swift concurrency.
     associatedtype Value: Sendable
 
     /**
      Returns the value for the given `id`, if present.
 
      The method will return `nil` if the value is not being stored by the cache, either because it was never stored or
-     because it was invalidated at some point.
+     because it was cleared at some point.
      - Parameter id: The id whose potentially cached value we want.
      - Returns: The value for `id`, if currently stored in the cache, or `nil` if not.
      */
@@ -35,7 +39,7 @@ public protocol AsyncCache<ID, Value>: Sendable {
      Stores the given value in the cache.
 
      A cache offers no guarantees whatsoever that the value stored _will_ be returned later but _if_ it is returned
-     later it will be exactly the same value passed in this method.
+     later it will be the last value passed in this method for the `id`.
      - Parameters:
        - value: The value to store.
        - id: ID associated with the value to store.

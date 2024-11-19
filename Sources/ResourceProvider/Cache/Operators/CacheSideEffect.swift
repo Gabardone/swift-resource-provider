@@ -71,7 +71,7 @@ public extension SyncCache {
     }
 }
 
-// MARK: - SendableSyncCache Side Effects
+// MARK: - SyncCache & Sendable Side Effects
 
 private struct ValueForSideEffectedSendableSyncCache<Effected: SyncCache & Sendable>: Sendable {
     var sideEffected: Effected
