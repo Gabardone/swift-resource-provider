@@ -25,13 +25,20 @@ private struct CatchingSyncProvider<Caught: SyncProvider, Failure: Error>: SyncP
 
 public extension SyncProvider {
     /**
-     Builds a provider that catches the exceptions thrown by the calling one.
+     Builds a ``SyncProvider`` that catches the exceptions thrown by the calling one.
 
-     This modifier converts a throwing sync provider into a non-throwing one. The catching block will only be called
-     when the root provider throws an exception and will need to return a value.
-     - Parameter catcher: A block that gets errors thrown and returns a new value. The id for the requested value that
-     caused the exception is also passed in.
-     - Returns: A sync provider that catches the exceptions thrown by the caller.
+     This modifier converts a throwing sync provider into one that `throws` differently. The catching block will
+     only be called when the root provider `throws` and is in no obligation to `throw` itself (and in fact won't if
+     `OtherFailure == Never`) and may filter out errors, perform side effects and return values instead of rethrowing.
+
+     Beyond that the behavior depends on the type of `OtherFailure`:
+     - If `OtherFailure == Never` the resulting provider will become a non-throwing one.
+     - If `OtherFailure == Failure` the resulting provider may rethrow or `throw` a different error of the same kind.
+     - If `OtherFailure == any Error` the resulting provider may throw whatever it wants.
+     - If `OtherFailure != Failure` the provider may translate the original provider's errors into a different type.
+     - Parameter catcher: A block that gets called when errors are thrown with the error thrown and the `id` requested
+     that cause the error to be thrown.
+     - Returns: A ``SyncProvider`` that catches the exceptions thrown by the caller and processes them differently.
      */
     func `catch`<OtherFailure: Error>(
         _ catcher: @escaping (Failure, ID) throws(OtherFailure) -> Value
@@ -59,6 +66,26 @@ private struct CatchingSendableSyncProvider<Caught: SyncProvider & Sendable, Fai
 }
 
 public extension SyncProvider where Self: Sendable {
+    /**
+     Builds a ``SyncProvider`` `& Sendable` that catches the exceptions thrown by the calling one.
+
+     This modifier converts a throwing, `Sendable` sync provider into one that `throws` differently. The catching block
+     will only be called when the root provider `throws` and is in no obligation to `throw` itself (and in fact won't if
+     `OtherFailure == Never`) and may filter out errors, perform side effects and return values instead of rethrowing.
+
+     Beyond that the behavior depends on the type of `OtherFailure`:
+     - If `OtherFailure == Never` the resulting provider will become a non-throwing one.
+     - If `OtherFailure == Failure` the resulting provider may rethrow or `throw` a different error of the same kind.
+     - If `OtherFailure == any Error` the resulting provider may throw whatever it wants.
+     - If `OtherFailure != Failure` the provider may translate the original provider's errors into a different type.
+
+     This version of the operator maintains sendability so it can be more easily used with ``AsyncProvider`` or in other
+     concurrent contexts.
+     - Parameter catcher: A block that gets called when errors are thrown with the error thrown and the `id` requested
+     that cause the error to be thrown.
+     - Returns: A ``SyncProvider`` `& Sendable` that catches the exceptions thrown by the caller and processes them
+     differently.
+     */
     func `catch`<OtherFailure: Error>(
         _ catcher: @escaping @Sendable (Failure, ID) throws(OtherFailure) -> Value
     ) -> some SendableSyncProvider<ID, Value, OtherFailure> {
@@ -86,13 +113,23 @@ private struct SyncCatchingAsyncProvider<Caught: AsyncProvider, Failure: Error>:
 
 public extension AsyncProvider {
     /**
-     Builds a provider that catches the exceptions thrown by the calling one.
+     Builds an ``AsyncProvider`` that synchronously catches the exceptions thrown by the calling one.
 
-     This modifier converts a throwing async provider into a non-throwing one. The catching block will only be called
-     when the root provider throws an exception and will need to return a value.
-     - Parameter catcher: A block that gets errors thrown and returns a new value. The id for the requested value that
-     caused the exception is also passed in.
-     - Returns: An async provider that catches the exceptions thrown by the caller.
+     This modifier converts a throwing async provider into one that `throws` differently. The catching block
+     will only be called when the root provider `throws` and is in no obligation to `throw` itself (and in fact won't if
+     `OtherFailure == Never`) and may filter out errors, perform side effects and return values instead of rethrowing.
+
+     Beyond that the behavior depends on the type of `OtherFailure`:
+     - If `OtherFailure == Never` the resulting provider will become a non-throwing one.
+     - If `OtherFailure == Failure` the resulting provider may rethrow or `throw` a different error of the same kind.
+     - If `OtherFailure == any Error` the resulting provider may throw whatever it wants.
+     - If `OtherFailure != Failure` the provider may translate the original provider's errors into a different type.
+
+     This version of the operator manages the exceptions synchonously, avoiding one extra concurrent jump.
+     - Parameter catcher: A block that gets called when errors are thrown with the error thrown and the `id` requested
+     that cause the error to be thrown.
+     - Returns: An ``AsyncProvider`` that synchronously catches the exceptions thrown by the caller and processes them
+     differently.
      */
     func `catch`<OtherFailure: Error>(
         _ catcher: @escaping @Sendable (Failure, ID) throws(OtherFailure) -> Value
@@ -119,13 +156,23 @@ private struct AsyncCatchingAsyncProvider<Caught: AsyncProvider, Failure: Error>
 
 public extension AsyncProvider {
     /**
-     Builds a provider that catches the exceptions thrown by the calling one.
+     Builds an ``AsyncProvider`` that asynchronously catches the exceptions thrown by the calling one.
 
-     This modifier converts a throwing async provider into a non-throwing one. The catching block will only be called
-     when the root provider throws an exception and will need to return a value.
-     - Parameter catcher: A block that gets errors thrown and returns a new value. The id for the requested value that
-     caused the exception is also passed in.
-     - Returns: An async provider that catches the exceptions thrown by the caller.
+     This modifier converts a throwing async provider into one that `throws` differently. The catching block
+     will only be called when the root provider `throws` and is in no obligation to `throw` itself (and in fact won't if
+     `OtherFailure == Never`) and may filter out errors, perform side effects and return values instead of rethrowing.
+
+     Beyond that the behavior depends on the type of `OtherFailure`:
+     - If `OtherFailure == Never` the resulting provider will become a non-throwing one.
+     - If `OtherFailure == Failure` the resulting provider may rethrow or `throw` a different error of the same kind.
+     - If `OtherFailure == any Error` the resulting provider may throw whatever it wants.
+     - If `OtherFailure != Failure` the provider may translate the original provider's errors into a different type.
+
+     This version of the operator manages the exceptions asynchonously, `await`-ing the error catch logic.
+     - Parameter catcher: An `async` block that gets called when errors are thrown with the error thrown and the `id`
+     requested that cause the error to be thrown.
+     - Returns: An ``AsyncProvider`` that asynchronously catches the exceptions thrown by the caller and processes them
+     differently.
      */
     func `catch`<OtherFailure: Error>(
         _ catcher: @escaping @Sendable (Failure, ID) async throws(OtherFailure) -> Value
