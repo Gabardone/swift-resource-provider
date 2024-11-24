@@ -27,15 +27,15 @@ extension ConcurrentSyncCache: AsyncCache {
 
 public extension SyncCache where Self: Sendable, ID: Sendable, Value: Sendable {
     /**
-     Returns a wrapper for a (`Sendable`) sync cache that guarantees serialization.
+     Returns a wrapper for a ``SyncCache`` `& Sendable` that guarantees serialization.
 
-     If a sync cache needs to be used in an `async` context and it plays well with concurrency. you will want to use
-     this operator to make it into an ``AsyncCache``.
+     If a sync cache needs to be used in an concurrent context, it can be moved between execution contexts (`Sendable`)
+     and it plays well with reentrancy you will want to use this operator to make it into an ``AsyncCache``.
 
-     The `Sendable` requirement for the caller tells the compiler that it's safe to treat the caller concurrently and in
-     general it _will_ be safe unless you just `@unchecked Sendable` or otherwise forced adoption of the marker protocol
-     but failed to get the implementation to actually be safe in concurrent use.
-     - Returns: An `async` cache version of the calling ``SyncCache`` that runs its calls serially.
+     While you can sidestep the `Sendable` requirement by using ``forceSendable()-424bn`` on a non-`Sendable`
+     ``SyncCache`` you should be very sure that it will behave properly in a concurrent context. If you can't guarantee
+     reentrance safety use ``serialized()`` instead.
+     - Returns: An ``AsyncCache`` version of the calling ``SyncCache`` that runs its calls concurrently.
      */
     func concurrent() -> some AsyncCache<ID, Value> {
         ConcurrentSyncCache(concurring: self)

@@ -15,14 +15,16 @@ private struct ConcurrentSyncProvider<P: SyncProvider>: AsyncProvider where P: S
 
 public extension SyncProvider where Self: Sendable {
     /**
-     Returns a wrapper for a sync provider that guarantees serialization.
+     Returns a wrapper for a ``SyncProvider`` `& Sendable` that guarantees serialization.
 
-     If a sync provider needs to be used in an `async` context and it doesn't play well with concurrency —usually
-     because you want to avoid data races with its state management— you will want to wrap it in one of these.
+     If a sync provider needs to be used in a concurrent context, it can be moved between execution contexts
+     (`Sendable`) and it plays well with reentrancy you will want to use this operator to make it into an
+     ``AsyncProvider``.
 
-     - Todo: Talk about required sendability of ID & Value.
-     - Todo: Talk about IKWID for making valueForID functionally `@Sendable`
-     - Returns: An `async` provider version of the calling `SyncProvider` that runs its calls serially.
+     While you can sidestep the `Sendable` requirement by using ``forceSendable()`` on a non-`Sendable` ``SyncProvider``
+     you should be very sure that it will behave properly in a concurrent context. If you can't guarantee reentrance
+     safety use ``serialized()`` instead.
+     - Returns: An ``AsyncProvider`` version of the calling ``SyncProvider`` that runs its calls concurrently.
      */
     func concurrent() -> some AsyncProvider<ID, Value, Failure> {
         ConcurrentSyncProvider(syncProvider: self)
