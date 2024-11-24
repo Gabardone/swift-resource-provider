@@ -75,20 +75,29 @@ private actor ThrowingAsyncProviderCoordinator<
 }
 
 extension ThrowingAsyncProviderCoordinator: AsyncProvider {
-    typealias Failure = any Error // Cannot do better with `Task`
-
     nonisolated
-    func value(for id: Coordinated.ID) async throws -> Coordinated.Value {
-        try await taskFor(id: id).value
+    func value(for id: Coordinated.ID) async throws(Coordinated.Failure) -> Coordinated.Value {
+        // A bit of a song and dance to work around `Swift.Task` lack of support for typed throws.
+        do {
+            return try await taskFor(id: id).value
+        } catch let error as Coordinated.Failure {
+            throw error
+        } catch {
+            // We should definitely never find ourselves here.
+            fatalError()
+        }
     }
 }
 
 public extension AsyncProvider where Failure == Never, ID: Sendable, Value: Sendable {
     /**
-     Ensures that the provider will not do the same work twice when the same id is requested concurrently.
+     Ensures that the provider will not do the same work twice when the same id is requested concurrently. Non-throwing
+     version.
 
-     This modifier doesn't make any other guarantees when it comes to concurrent behavior. You should usually finish
-     off an asynchronous provider with this modifier. If handling a synchronous one, use `serialized` instead.
+     Finishing off an ``AsyncProvider`` with this operator unloads the responsibility of ensuring that work is not
+     repeated for several concurrent requests for the same resource from all the others.
+     - Note: Non-throwing and throwing versions of this exist because of `Swift.Task`'s current limitations around
+     generic typed throws.
      - Returns: A provider that ensures that multiple overlapping requests for the same `id` use the same task.
      */
     func coordinated() -> some AsyncProvider<ID, Value, Never> {
@@ -98,14 +107,16 @@ public extension AsyncProvider where Failure == Never, ID: Sendable, Value: Send
 
 public extension AsyncProvider where ID: Sendable, Value: Sendable {
     /**
-     Ensures that the provider will not do the same work twice when the same id is requested concurrently.
+     Ensures that the provider will not do the same work twice when the same id is requested concurrently. Throwing
+     version.
 
-     This modifier doesn't make any other guarantees when it comes to concurrent behavior. You should usually finish
-     off an asynchronous provider with this modifier. If handling a synchronous one, use `serialized` instead.
-     - Todo: Mention that we're losing typed errors because of `Task` library limitations.
+     Finishing off an ``AsyncProvider`` with this operator unloads the responsibility of ensuring that work is not
+     repeated for several concurrent requests for the same resource from all the others.
+     - Note: Non-throwing and throwing versions of this exist because of `Swift.Task`'s current limitations around
+     generic typed throws.
      - Returns: A provider that ensures that multiple overlapping requests for the same `id` use the same task.
      */
-    func coordinated() -> some AsyncProvider<ID, Value, any Error> {
+    func coordinated() -> some AsyncProvider<ID, Value, Failure> {
         ThrowingAsyncProviderCoordinator(coordinated: self)
     }
 }
