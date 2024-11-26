@@ -28,8 +28,8 @@ public extension SyncCache {
      force-converts a non-sendable synchronous cache into a sendable one, usually so you can apply ``concurrent()``
      or ``serialized()`` to it afterwards.
 
-     The operator can only be applied when both `ID` and `Value` are already `Sendable`, use ``mapID(_:)-804fu`` and
-     ``mapValueToStorage(toStorage:fromStorage:)`` to achieve either if needed —if it involves `@unchecked Sendable`
+     The operator can only be applied when both `ID` and `Value` are already `Sendable`. Use ``mapID(_:)-ughf`` and
+     ``mapValueToStorage(_:fromStorage:)-23pui`` to achieve either if needed —if it involves `@unchecked Sendable`
      wrappers that's on you, the developer—.
      - Returns: An IKWID `SyncProvider` that has the exact same behavior as the caller but is seen by the compiler as
      `Sendable`
@@ -41,10 +41,11 @@ public extension SyncCache {
 
 public extension SyncCache where Self: Sendable {
     /**
-     Forces a non-sendable sync cache into being `Sendable`.
+     Forces a non-sendable ``SyncCache`` into being `Sendable`.
 
-     In case you are using `forceSendable` in a generic context —So Meta— this override skips the wrapper when you
-     actually apply it to a `SyncProvider` that is already `Sendable`.
+     In case you are using ``forceSendable`` in a generic context —So Meta— this override skips the wrapper when you
+     actually apply it to a ``SyncProvider`` that is already `Sendable`.
+     - Returns: Itself.
      */
     func forceSendable() -> some SyncCache<ID, Value> & Sendable {
         self
