@@ -43,7 +43,7 @@ public extension SyncCache {
      - Returns: A sync cache that takes `OtherValue` as its `Value` type.
      */
     func mapValueToStorage<OtherValue>(
-        toStorage: @escaping (OtherValue, ID) -> Value?,
+        _ toStorage: @escaping (OtherValue, ID) -> Value?,
         fromStorage: @escaping (Value, ID) -> OtherValue?
     ) -> some SyncCache<ID, OtherValue> {
         ValueMappingSyncCache(mapped: self, valueToStorage: toStorage, valueFromStorage: fromStorage)
@@ -140,7 +140,7 @@ public extension AsyncCache {
      - Returns: A sync cache that takes `OtherValue` as its `Value` type.
      */
     func mapValueToStorage<OtherValue: Sendable>(
-        toStorage: @escaping @Sendable (OtherValue, ID) -> Value?,
+        _ toStorage: @escaping @Sendable (OtherValue, ID) -> Value?,
         fromStorage: @escaping @Sendable (Value, ID) -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
         SyncValueMappingAsyncCache(mapped: self, valueToStorage: toStorage, valueFromStorage: fromStorage)
@@ -190,7 +190,7 @@ public extension AsyncCache {
      - Returns: A sync cache that takes `OtherValue` as its `Value` type.
      */
     func mapValueToStorage<OtherValue: Sendable>(
-        toStorage: @escaping @Sendable (OtherValue, ID) async -> Value?,
+        _ toStorage: @escaping @Sendable (OtherValue, ID) async -> Value?,
         fromStorage: @escaping @Sendable (Value, ID) async -> OtherValue?
     ) -> some AsyncCache<ID, OtherValue> {
         AsyncValueMappingAsyncCache(mapped: self, valueToStorage: toStorage, valueFromStorage: fromStorage)
