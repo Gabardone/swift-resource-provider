@@ -26,6 +26,18 @@ private struct SyncInterjectingNeverFailureAsyncProvider<Interjected: AsyncProvi
 }
 
 public extension AsyncProvider {
+    /**
+     Synchronously intercepts a provider's value request and may optionally decide to return a different one instead.
+
+     The given logic will be called **before** requesting the value from the modified provider. If the interjection
+     logic returns a value it will be returned by the provider and the modified provider **will not** be called.
+
+     If the block returns `nil` the modified provider will be called normally, either returning a value or throwing
+     an error.
+     - Parameter interject: A synchronous block that takes an `id` and either returns a value, returns `nil`.
+     - Returns: An ``AsyncProvider`` that allows the given block to take first dibs at returning a value for any given
+     `id`.
+     */
     func interject(_ interject: @escaping @Sendable (ID) -> Value?) -> some AsyncProvider<ID, Value, Failure> {
         SyncInterjectingNeverFailureAsyncProvider(interjected: self, interjector: interject)
     }
@@ -49,14 +61,21 @@ private struct SyncInterjectingSameFailureAsyncProvider<Interjected: AsyncProvid
 
 public extension AsyncProvider {
     /**
-     Allows for optionally intercepting a request for an `id` and returning something different.
+     Synchronously intercepts a provider's value request and may optionally decide to return a different one instead.
 
-     The block will be called before calling further into the provider chain and if the block returns a non-`nil` value
-     it will return that instead of calling in further. If it throws it will also skip calling further in as well.
+     The given logic will be called **before** requesting the value from the modified provider. If the interjection
+     logic returns a value it will be returned by the provider and the modified provider **will not** be called. If it
+     throws an error it will be rethrown by the provider to the caller.
 
-     If the block returns `nil` then the provider will continue as expected.
-     - Parameter interject: A block that takes an `id` and either returns a value or `nil`
-     - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
+     If the block returns `nil` the modified provider will be called normally, either returning a value or throwing
+     an error.
+
+     This override also applies when both the interjection logic and modified provider have a failure type of `Never`,
+     in which case no one will be throwing anything.
+     - Parameter interject: A synchronous block that takes an `id` and either returns a value, returns `nil` or (if
+     `OtherFailure != Never`) throws an error.
+     - Returns: An ``AsyncProvider`` that allows the given block to take first dibs at returning a value for any given
+     `id` or throwing an error.
      */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) throws(OtherFailure) -> Value?
@@ -86,14 +105,21 @@ private struct SyncInterjectingAnyFailureAsyncProvider<
 
 public extension AsyncProvider {
     /**
-     Allows for optionally intercepting a request for an `id` and returning something different.
+     Synchronously intercepts a provider's value request and may optionally decide to return a different one instead.
 
-     The block will be called before calling further into the provider chain and if the block returns a non-`nil` value
-     it will return that instead of calling in further. If it throws it will also skip calling further in as well.
+     The given logic will be called **before** requesting the value from the modified provider. If the interjection
+     logic returns a value it will be returned by the provider and the modified provider **will not** be called. If it
+     throws an error it will be rethrown by the provider to the caller.
 
-     If the block returns `nil` then the provider will continue as expected.
-     - Parameter interject: A block that takes an `id` and either returns a value or `nil`
-     - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
+     If the block returns `nil` the modified provider will be called normally, either returning a value or throwing
+     an error.
+
+     This is the most disfavored overload.  If the errors thrown by the modified provider and the interjection block
+     are of different types the resulting provider will throw `any Error`.
+     - Parameter interject: A synchronous block that takes an `id` and either returns a value, returns `nil` or throws
+     an error.
+     - Returns: An ``AsyncProvider`` that allows the given block to take first dibs at returning a value for any given
+     `id` or throwing an error.
      */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) throws(OtherFailure) -> Value?
@@ -122,6 +148,19 @@ private struct SyncInterjectingNewFailureAsyncProvider<
 }
 
 extension AsyncProvider where Failure == Never {
+    /**
+     Synchronously intercepts a provider's value request and may optionally decide to return a different one instead.
+
+     The given logic will be called **before** requesting the value from the modified provider. If the interjection
+     logic returns a value it will be returned by the provider and the modified provider **will not** be called. If it
+     throws an error it will be rethrown by the provider to the caller.
+
+     If the block returns `nil` the modified provider will be called normally.
+     - Parameter interject: A synchronous block that takes an `id` and either returns a value, returns `nil` or throws
+     an error.
+     - Returns: An ``AsyncProvider`` that allows the given block to take first dibs at returning a value for any given
+     `id` or throwing an error.
+     */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) throws(OtherFailure) -> Value?
     ) -> some AsyncProvider<ID, Value, OtherFailure> {
@@ -148,6 +187,18 @@ private struct AsyncInterjectingNeverFailureAsyncProvider<Interjected: AsyncProv
 }
 
 public extension AsyncProvider {
+    /**
+     Asynchronously intercepts a provider's value request and may optionally decide to return a different one instead.
+
+     The given logic will be called **before** requesting the value from the modified provider. If the interjection
+     logic returns a value it will be returned by the provider and the modified provider **will not** be called.
+
+     If the block returns `nil` the modified provider will be called normally, either returning a value or throwing
+     an error.
+     - Parameter interject: An `async` block that takes an `id` and either returns a value, returns `nil`.
+     - Returns: An ``AsyncProvider`` that allows the given block to take first dibs at returning a value for any given
+     `id`.
+     */
     func interject(_ interject: @escaping @Sendable (ID) async -> Value?) -> some AsyncProvider<ID, Value, Failure> {
         AsyncInterjectingNeverFailureAsyncProvider(interjected: self, interjector: interject)
     }
@@ -171,14 +222,21 @@ private struct AsyncInterjectingSameFailureAsyncProvider<Interjected: AsyncProvi
 
 public extension AsyncProvider {
     /**
-     Allows for optionally intercepting a request for an `id` and returning something different.
+     Asynchronously intercepts a provider's value request and may optionally decide to return a different one instead.
 
-     The block will be called before calling further into the provider chain and if the block returns a non-`nil` value
-     it will return that instead of calling in further. If it throws it will also skip calling further in as well.
+     The given logic will be called **before** requesting the value from the modified provider. If the interjection
+     logic returns a value it will be returned by the provider and the modified provider **will not** be called. If it
+     throws an error it will be rethrown by the provider to the caller.
 
-     If the block returns `nil` then the provider will continue as expected.
-     - Parameter interject: A block that takes an `id` and either returns a value or `nil`
-     - Returns: A provider that allows the given block to take first dibs at returning a value for any given `id`.
+     If the block returns `nil` the modified provider will be called normally, either returning a value or throwing
+     an error.
+
+     This override also applies when both the interjection logic and modified provider have a failure type of `Never`,
+     in which case no one will be throwing anything.
+     - Parameter interject: An `async` block that takes an `id` and either returns a value, returns `nil` or (if
+     `OtherFailure != Never`) throws an error.
+     - Returns: An ``AsyncProvider`` that allows the given block to take first dibs at returning a value for any given
+     `id` or throwing an error.
      */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) async throws(OtherFailure) -> Value?
@@ -207,6 +265,23 @@ private struct AsyncInterjectingAnyFailureAsyncProvider<
 }
 
 public extension AsyncProvider {
+    /**
+     Asynchronously intercepts a provider's value request and may optionally decide to return a different one instead.
+
+     The given logic will be called **before** requesting the value from the modified provider. If the interjection
+     logic returns a value it will be returned by the provider and the modified provider **will not** be called. If it
+     throws an error it will be rethrown by the provider to the caller.
+
+     If the block returns `nil` the modified provider will be called normally, either returning a value or throwing
+     an error.
+
+     This is the most disfavored overload.  If the errors thrown by the modified provider and the interjection block
+     are of different types the resulting provider will throw `any Error`.
+     - Parameter interject: An `async` block that takes an `id` and either returns a value, returns `nil` or throws
+     an error.
+     - Returns: An ``AsyncProvider`` that allows the given block to take first dibs at returning a value for any given
+     `id` or throwing an error.
+     */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) async throws(OtherFailure) -> Value?
     ) -> some AsyncProvider<ID, Value, any Error> {
@@ -234,6 +309,19 @@ private struct AsyncInterjectingNewFailureAsyncProvider<
 }
 
 extension AsyncProvider where Failure == Never {
+    /**
+     Asynchronously intercepts a provider's value request and may optionally decide to return a different one instead.
+
+     The given logic will be called **before** requesting the value from the modified provider. If the interjection
+     logic returns a value it will be returned by the provider and the modified provider **will not** be called. If it
+     throws an error it will be rethrown by the provider to the caller.
+
+     If the block returns `nil` the modified provider will be called normally.
+     - Parameter interject: An `async` block that takes an `id` and either returns a value, returns `nil` or throws
+     an error.
+     - Returns: An ``AsyncProvider`` that allows the given block to take first dibs at returning a value for any given
+     `id` or throwing an error.
+     */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) async throws(OtherFailure) -> Value?
     ) -> some AsyncProvider<ID, Value, OtherFailure> {
