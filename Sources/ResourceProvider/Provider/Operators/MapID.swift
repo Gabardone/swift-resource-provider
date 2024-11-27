@@ -21,13 +21,14 @@ private struct IDMappingSyncProvider<Mapped: SyncProvider, ID: Hashable>: SyncPr
 
 public extension SyncProvider {
     /**
-     Maps an id type to the calling provider's id type.
+     Maps an id type to the calling ``SyncProvider`` id type.
 
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods has the id passed in, where you want to get the outside `ID` coming from the earlier provider so
-     you can use it to encode or reconstitute any data lost in the id translation.
-     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling provider.
-     - Returns: A provider that takes `OtherID` as its `ID` type.
+     If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
+     for value mapping, since they are passed in the value transform methods for cases where the information the id
+     contains is required or helpful for the value transformation.
+     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling
+     ``SyncProvider``.
+     - Returns: A ``SyncProvider`` that takes `OtherID` as its `ID` type.
      */
     func mapID<OtherID: Hashable>(
         _ transform: @escaping (OtherID) -> ID
@@ -55,13 +56,18 @@ private struct IDMappingSendableSyncProvider<
 
 public extension SyncProvider where Self: Sendable {
     /**
-     Maps an id type to the calling provider's id type.
+     Maps an id type to the calling ``SyncProvider`` id type, maintaining sendability.
 
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods has the id passed in, where you want to get the outside `ID` coming from the earlier provider so
-     you can use it to encode or reconstitute any data lost in the id translation.
-     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling provider.
-     - Returns: A provider that takes `OtherID` as its `ID` type.
+     If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
+     for value mapping, since they are passed in the value transform methods for cases where the information the id
+     contains is required or helpful for the value transformation.
+
+     This is the ``Sendable`` version for easier interaction with ``AsyncCache`` and ``AsyncProvider``. While the
+     declaration requires neither `ID` nor `Value` to adopt ``Sendable`` in practice you're unlikely to keep the
+     compiler happy unless they aren't.
+     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling
+     ``SyncProvider`` `& Sendable`.
+     - Returns: A ``SyncProvider`` `& Sendable` that takes `OtherID` as its `ID` type.
      */
     func mapID<OtherID: Hashable>(
         _ transform: @escaping @Sendable (OtherID) -> ID
@@ -89,13 +95,14 @@ private struct IDMappingAsyncProvider<
 
 public extension AsyncProvider {
     /**
-     Maps an id type to the calling provider's id type.
+     Maps an id type to the calling ``AsyncProvider`` id type.
 
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods has the id passed in, where you want to get the outside `ID` coming from the earlier provider so
-     you can use it to encode or reconstitute any data lost in the id translation.
-     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling provider.
-     - Returns: A provider that takes `OtherID` as its `ID` type.
+     If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
+     for value mapping, since they are passed in the value transform methods for cases where the information the id
+     contains is required or helpful for the value transformation.
+     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling
+     ``AsyncProvider``.
+     - Returns: An ``AsyncProvider`` that takes `OtherID` as its `ID` type.
      */
     func mapID<OtherID: Hashable>(
         _ transform: @escaping @Sendable (OtherID) -> ID
