@@ -23,13 +23,14 @@ extension IDMappedSyncCache: SyncCache {
 
 public extension SyncCache {
     /**
-     Maps an id type to the calling cache's id type.
+     Maps an id type to the calling ``SyncCache`` id type.
 
      If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
      for value mapping, since they are passed in the value transform methods for cases where the information the id
      contains is required or helpful for the value transformation.
-     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling cache.
-     - Returns: A cache that takes `OtherID` as its `ID` type.
+     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling
+     ``SyncCache``.
+     - Returns: A ``SyncCache`` that takes `OtherID` as its `ID` type.
      */
     func mapID<OtherID: Hashable>(_ transform: @escaping (OtherID) -> ID) -> some SyncCache<OtherID, Value> {
         IDMappedSyncCache(idMapped: self, idTransform: transform)
@@ -54,7 +55,7 @@ extension IDMappedSendableSyncCache: SyncCache {
 
 public extension SyncCache where Self: Sendable {
     /**
-     Maps an id type to the calling cache's id type.
+     Maps an id type to the calling ``SyncCache`` id type, maintaining sendability.
 
      If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
      for value mapping, since they are passed in the value transform methods for cases where the information the id
@@ -63,8 +64,9 @@ public extension SyncCache where Self: Sendable {
      This is the ``Sendable`` version for easier interaction with ``AsyncCache`` and ``AsyncProvider``. While the
      declaration requires neither `ID` nor `Value` to adopt ``Sendable`` in practice you're unlikely to keep the
      compiler happy unless they aren't.
-     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling cache.
-     - Returns: A `Sendable` sync cache that takes `OtherID` as its `ID` type.
+     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling
+     ``SyncCache`` `& Sendable`.
+     - Returns: A ``SyncCache`` `& Sendable` that takes `OtherID` as its `ID` type.
      */
     func mapID<OtherID: Hashable>(
         _ transform: @escaping @Sendable (OtherID) -> ID
@@ -91,13 +93,14 @@ extension IDMappedAsyncCache: AsyncCache {
 
 public extension AsyncCache {
     /**
-     Maps an id type to the calling async cache's id type.
+     Maps an id type to the calling ``AsyncCache`` id type.
 
      If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
      for value mapping, since they are passed in the value transform methods for cases where the information the id
      contains is required or helpful for the value transformation.
-     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling cache.
-     - Returns: A cache that takes `OtherID` as its `ID` type.
+     - Parameter transform: A block that translates an id of `OtherID` type to the one used by the calling
+     ``AsyncCache``.
+     - Returns: An ``AsyncCache`` that takes `OtherID` as its `ID` type.
      */
     func mapID<OtherID: Hashable & Sendable>(
         _ transform: @escaping @Sendable (OtherID) -> ID
