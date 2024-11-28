@@ -29,7 +29,7 @@ extension ValueMappingSyncCache: SyncCache {
 
 public extension SyncCache {
     /**
-     Maps a value type to and from the calling cache's value type.
+     Maps a value type to and from the modified ``SyncCache`` value type.
 
      If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
      for value mapping, since they are passed in the value transform methods for cases where the information the id
@@ -40,7 +40,7 @@ public extension SyncCache {
      occurs the block can return `nil`
        - fromStorage: A block that translates a cached value to `OtherValue`. It gets both the cached value and the
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
-     - Returns: A sync cache that takes `OtherValue` as its `Value` type.
+     - Returns: A ``SyncCache`` that takes `OtherValue` as its `Value` type.
      */
     func mapValueToStorage<OtherValue>(
         _ toStorage: @escaping (OtherValue, ID) -> Value?,
@@ -74,7 +74,7 @@ extension ValueMappingSendableSyncCache: SyncCache {
 
 public extension SyncCache where Self: Sendable {
     /**
-     Maps a value type to and from the calling cache's value type.
+     Maps a value type to and from the modified ``SyncCache`` `& Sendable` value type.
 
      If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
      for value mapping, since they are passed in the value transform methods for cases where the information the id
@@ -89,7 +89,7 @@ public extension SyncCache where Self: Sendable {
      occurs the block can return `nil`
        - fromStorage: A block that translates a cached value to `OtherValue`. It gets both the cached value and the
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
-     - Returns: A sync cache that takes `OtherValue` as its `Value` type.
+     - Returns: A ``SyncCache`` `& Sendable` that takes `OtherValue` as its `Value` type.
      */
     func mapValueToStorage<OtherValue: Sendable>(
         _ toStorage: @escaping @Sendable (OtherValue, ID) -> Value?,
@@ -123,21 +123,21 @@ extension SyncValueMappingAsyncCache: AsyncCache {
 
 public extension AsyncCache {
     /**
-     Maps a value type to and from the calling async cache's value type.
+     Synchronously maps a value type to and from the modified``AsyncCache`` value type.
 
      If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
      for value mapping, since they are passed in the value transform methods for cases where the information the id
      contains is required or helpful for the value transformation.
 
-     If the transform functions are synchronous this method will call them synchronously and save one async context jump
-     on each direction.
+     This synchronous overload will call the mapping methods synchronously and save one async context jump on each
+     direction.
      - Parameters:
        - toStorage: A block that translates a value from `OtherValue` to `Self.Value` so it can be stored by the calling
      cache. It gets both the value and the associated id passed in. If translation is impossible or some other error
      occurs the block can return `nil`
        - fromStorage: A block that translates a cached value to `OtherValue`. It gets both the cached value and the
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
-     - Returns: A sync cache that takes `OtherValue` as its `Value` type.
+     - Returns: An ``AsyncCache`` that takes `OtherValue` as its `Value` type.
      */
     func mapValueToStorage<OtherValue: Sendable>(
         _ toStorage: @escaping @Sendable (OtherValue, ID) -> Value?,
@@ -173,21 +173,20 @@ extension AsyncValueMappingAsyncCache: AsyncCache {
 
 public extension AsyncCache {
     /**
-     Maps a value type to and from the calling async cache's value type.
+     Asynchronously maps a value type to and from the modified``AsyncCache`` value type.
 
      If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
      for value mapping, since they are passed in the value transform methods for cases where the information the id
      contains is required or helpful for the value transformation.
 
-     Asynchronous value transform methods will require one extra async context jump in either direction, if possible
-     stick to synchronous mapping.
+     This asynchronous overload will require one extra async context jump in either direction, use if needed.
      - Parameters:
        - toStorage: A block that translates a value from `OtherValue` to `Self.Value` so it can be stored by the calling
      cache. It gets both the value and the associated id passed in. If translation is impossible or some other error
      occurs the block can return `nil`
        - fromStorage: A block that translates a cached value to `OtherValue`. It gets both the cached value and the
      associated id passed in. If translation is impossible or some other error occurs the block can return `nil`
-     - Returns: A sync cache that takes `OtherValue` as its `Value` type.
+     - Returns: An ``AsyncCache`` that takes `OtherValue` as its `Value` type.
      */
     func mapValueToStorage<OtherValue: Sendable>(
         _ toStorage: @escaping @Sendable (OtherValue, ID) async -> Value?,

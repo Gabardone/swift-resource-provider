@@ -23,15 +23,22 @@ private struct SyncValueMappingNeverFailureAsyncProvider<Mapped: AsyncProvider, 
 
 public extension AsyncProvider {
     /**
-     Maps the calling provider's `Value` type to a different type.
+     Synchronously maps an ``AsyncProvider`` returned values to different ones.
 
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
+     Use this modifier when the values returned need any processing or transformation, whether into a different type or
+     just some kind of modification.
+
+     If there are cases where the `id` is enough to determine whether a different value needs to be returned, use
+     ``interject`` for those.
+
+     Note that this won't be called if the modified provider throws. For that you'll need to use ``catch``.
+
+     If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
+     for value mapping, since they are passed to the value transform methods for cases where the information the id
+     contains is required or helpful for the value transformation.
+     - Parameter transform: A synchronous block that translates a returning value to another value of type `OtherValue`.
+     It gets both the value and the id that was requested to return it.
+     - Returns: An ``AsyncProvider`` that returns values of type `OtherValue`.
      */
     func mapValue<OtherValue>(
         _ transform: @escaping @Sendable (Value, ID) -> OtherValue
@@ -54,15 +61,22 @@ private struct SyncValueMappingSameFailureAsyncProvider<Mapped: AsyncProvider, V
 
 public extension AsyncProvider {
     /**
-     Maps the calling provider's `Value` type to a different type.
+     Synchronously maps an ``AsyncProvider`` returned values to different ones, possibly throwing an error instead.
 
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
+     Use this modifier when the values returned need any processing or transformation, whether into a different type or
+     just some kind of modification.
+
+     If there are cases where the `id` is enough to determine whether a different value needs to be returned, use
+     ``interject`` for those.
+
+     Note that this won't be called if the modified provider throws. For that you'll need to use ``catch``.
+
+     If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
+     for value mapping, since they are passed to the value transform methods for cases where the information the id
+     contains is required or helpful for the value transformation.
+     - Parameter transform: A synchronous block that translates a returning value to another value of type `OtherValue`
+     or throws if it cannot do so. It gets both the value and the id that was requested to return it.
+     - Returns: An ``AsyncProvider`` that returns values of type `OtherValue` or throws.
      */
     @_disfavoredOverload
     func mapValue<OtherValue>(
@@ -90,17 +104,25 @@ private struct SyncValueMappingAnyFailureAsyncProvider<
 
 public extension AsyncProvider {
     /**
-     Maps the calling provider's `Value` type to a different type.
+     Synchronously maps an ``AsyncProvider`` returned values to different ones, possibly throwing an error instead.
 
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
+     Use this modifier when the values returned need any processing or transformation, whether into a different type or
+     just some kind of modification.
 
-     If the given `transform` block throws the provider itself will throw as well.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
+     If there are cases where the `id` is enough to determine whether a different value needs to be returned, use
+     ``interject`` for those.
+
+     Note that this won't be called if the modified provider throws. For that you'll need to use ``catch``.
+
+     If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
+     for value mapping, since they are passed to the value transform methods for cases where the information the id
+     contains is required or helpful for the value transformation.
+
+     This is the most disfavored overload.  If the errors thrown by the modified provider and the transform block
+     are of different types the resulting provider will throw `any Error`.
+     - Parameter transform: A synchronous block that translates a returning value to another value of type `OtherValue`
+     or throws if it cannot do so. It gets both the value and the id that was requested to return it.
+     - Returns: An ``AsyncProvider`` that returns values of type `OtherValue` or throws.
      */
     @_disfavoredOverload
     func mapValue<OtherValue, OtherFailure: Error>(
@@ -128,17 +150,22 @@ private struct SyncValueMappingNewFailureAsyncProvider<
 
 public extension AsyncProvider where Failure == Never {
     /**
-     Maps the calling provider's `Value` type to a different type.
+     Synchronously maps an ``AsyncProvider`` returned values to different ones, possibly throwing an error instead.
 
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
+     Use this modifier when the values returned need any processing or transformation, whether into a different type or
+     just some kind of modification.
 
-     If the given `transform` block throws the provider itself will throw as well.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
+     If there are cases where the `id` is enough to determine whether a different value needs to be returned, use
+     ``interject`` for those.
+
+     Note that this won't be called if the modified provider throws. For that you'll need to use ``catch``.
+
+     If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
+     for value mapping, since they are passed to the value transform methods for cases where the information the id
+     contains is required or helpful for the value transformation.
+     - Parameter transform: A synchronous block that translates a returning value to another value of type `OtherValue`
+     or throws if it cannot do so. It gets both the value and the id that was requested to return it.
+     - Returns: An ``AsyncProvider`` that returns values of type `OtherValue`.
      */
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping @Sendable (Value, ID) throws(OtherFailure) -> OtherValue
@@ -163,15 +190,22 @@ private struct AsyncValueMappingNeverFailureAsyncProvider<Mapped: AsyncProvider,
 
 public extension AsyncProvider {
     /**
-     Maps the calling provider's `Value` type to a different type.
+     Asynchronously maps an ``AsyncProvider`` returned values to different ones.
 
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
+     Use this modifier when the values returned need any processing or transformation, whether into a different type or
+     just some kind of modification.
+
+     If there are cases where the `id` is enough to determine whether a different value needs to be returned, use
+     ``interject`` for those.
+
+     Note that this won't be called if the modified provider throws. For that you'll need to use ``catch``.
+
+     If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
+     for value mapping, since they are passed to the value transform methods for cases where the information the id
+     contains is required or helpful for the value transformation.
+     - Parameter transform: An `async` block that translates a returning value to another value of type `OtherValue`. It
+     gets both the value and the id that was requested to return it.
+     - Returns: An ``AsyncProvider`` that returns values of type `OtherValue`.
      */
     func mapValue<OtherValue>(
         _ transform: @escaping @Sendable (Value, ID) async -> OtherValue
@@ -194,15 +228,22 @@ private struct AsyncValueMappingSameFailureAsyncProvider<Mapped: AsyncProvider, 
 
 public extension AsyncProvider {
     /**
-     Maps the calling provider's `Value` type to a different type.
+     Asynchronously maps an ``AsyncProvider`` returned values to different ones, possibly throwing an error instead.
 
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
+     Use this modifier when the values returned need any processing or transformation, whether into a different type or
+     just some kind of modification.
+
+     If there are cases where the `id` is enough to determine whether a different value needs to be returned, use
+     ``interject`` for those.
+
+     Note that this won't be called if the modified provider throws. For that you'll need to use ``catch``.
+
+     If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
+     for value mapping, since they are passed to the value transform methods for cases where the information the id
+     contains is required or helpful for the value transformation.
+     - Parameter transform: An `async` block that translates a returning value to another value of type `OtherValue`
+     or throws if it cannot do so. It gets both the value and the id that was requested to return it.
+     - Returns: An ``AsyncProvider`` that returns values of type `OtherValue` or throws.
      */
     @_disfavoredOverload
     func mapValue<OtherValue>(
@@ -230,17 +271,25 @@ private struct AsyncValueMappingAnyFailureAsyncProvider<
 
 public extension AsyncProvider {
     /**
-     Maps the calling provider's `Value` type to a different type.
+     Asynchronously maps an ``AsyncProvider`` returned values to different ones, possibly throwing an error instead.
 
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
+     Use this modifier when the values returned need any processing or transformation, whether into a different type or
+     just some kind of modification.
 
-     If the given `transform` block throws the provider itself will throw as well.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
+     If there are cases where the `id` is enough to determine whether a different value needs to be returned, use
+     ``interject`` for those.
+
+     Note that this won't be called if the modified provider throws. For that you'll need to use ``catch``.
+
+     If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
+     for value mapping, since they are passed to the value transform methods for cases where the information the id
+     contains is required or helpful for the value transformation.
+
+     This is the most disfavored overload.  If the errors thrown by the modified provider and the transform block
+     are of different types the resulting provider will throw `any Error`.
+     - Parameter transform: An `async` block that translates a returning value to another value of type `OtherValue`
+     or throws if it cannot do so. It gets both the value and the id that was requested to return it.
+     - Returns: An ``AsyncProvider`` that returns values of type `OtherValue` or throws.
      */
     @_disfavoredOverload
     func mapValue<OtherValue, OtherFailure: Error>(
@@ -268,17 +317,22 @@ private struct AsyncValueMappingNewFailureAsyncProvider<
 
 public extension AsyncProvider where Failure == Never {
     /**
-     Maps the calling provider's `Value` type to a different type.
+     Asynchronously maps an ``AsyncProvider`` returned values to different ones, possibly throwing an error instead.
 
-     If you want to map both `ID` and `Value` it's usually best to map the the `ID` first (above) since the value
-     mapping methods have the id passed in, where you want to get the outside `ID` coming in from the provider so you
-     can use it to encode or reconstitute any data lost in the id translation.
+     Use this modifier when the values returned need any processing or transformation, whether into a different type or
+     just some kind of modification.
 
-     If the given `transform` block throws the provider itself will throw as well.
-     - Parameter transform: A block that translates a value of type `Self.Value` to `OtherValue`. It gets both the value
-     and the associated id passed in. If translation is impossible or some other error occurs the block can return.
-     `nil`.
-     - Returns: A provider that returns `OtherValue` as its value type.
+     If there are cases where the `id` is enough to determine whether a different value needs to be returned, use
+     ``interject`` for those.
+
+     Note that this won't be called if the modified provider throws. For that you'll need to use ``catch``.
+
+     If you want to map both `ID` and `Value` consider whether the original `ID` or its mapped type will work out better
+     for value mapping, since they are passed to the value transform methods for cases where the information the id
+     contains is required or helpful for the value transformation.
+     - Parameter transform: An `async` block that translates a returning value to another value of type `OtherValue`
+     or throws if it cannot do so. It gets both the value and the id that was requested to return it.
+     - Returns: An ``AsyncProvider`` that returns values of type `OtherValue`.
      */
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping @Sendable (Value, ID) async throws(OtherFailure) -> OtherValue
