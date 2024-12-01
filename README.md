@@ -86,7 +86,7 @@ Provider.networkDataSource()
 
 Every provider needs a source, which is expected to always return a thing or `throw` If it can't. If you're luckily in
 control of the source's logic such that you are reasonably sure it will never fail you can pass in a source that does
-not `throw` and whatever operators you apply to it won't need to deal with `try` and `catch`.
+not `throw` and whatever modifiers you apply to it won't need to deal with `try` and `catch`.
 
 In this case we are using the simple pre-built `Provider.networkDataSource()` method that just returns a source that
 downloads the data from the given `URL`, used as its `ID`, and fails (throws) if the download operation fails for any
@@ -245,10 +245,10 @@ warrants it.
 
 - When implementing providers or caches, if reentrancy may be an issue an `actor` is your best friend. In the context of
 solving the problems that `swift-resource-provider` is meant to help with, order of execution of concurrent tasks is
-almost never one, which makes `actors` a perfect fit for shielding against reentrancy issues. And remember that the
+almost never one, which makes ans `actor` a perfect fit for shielding against reentrancy issues. And remember that the
 basic avoidance of repeated work for the same ID is already taken care of by `coordinated()`.
 - That said, don't run declare your own actors when you have `.serialized()`, `.concurrent()` and `.coordinated()` to
-play with. Do so only if you need custom behaviors that those operators won't solve.
+play with. Do so only if you need custom behaviors that those modifiers won't solve.
 - Keep things sync as much as you can and make them async as late as you can. Think through the consequences of running
 a ``SyncProvider`` or ``SyncCache`` in an async environment and document the results. Use the given adapters
 (``serialized()`` and ``concurrent()`` depending on whether your design can deal with reentrancy while avoiding data

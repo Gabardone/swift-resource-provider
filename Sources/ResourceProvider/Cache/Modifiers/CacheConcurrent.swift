@@ -30,7 +30,7 @@ public extension SyncCache where Self: Sendable, ID: Sendable, Value: Sendable {
      Returns a wrapper for a ``SyncCache`` `& Sendable` that guarantees serialization.
 
      If a ``SyncCache`` needs to be used in an concurrent context and it plays well with reentrancy you will want to
-     use this operator to make it into an ``AsyncCache``.
+     use this modifier to make it into an ``AsyncCache``.
 
      While you can sidestep the `Sendable` requirement by using ``forceSendable()-424bn`` on a non-`Sendable`
      ``SyncCache`` you should be very sure that it won't have any data races if reentrancy happens. If you can't

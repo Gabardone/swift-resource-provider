@@ -31,7 +31,7 @@ public extension SyncProvider where Self: Sendable {
      Adds sendable sync caching to the calling provider, keeping sendability.
 
      If both the provider and the cache are `Sendable`, the result also is `Sendable`, making it simpler and safer to
-     make into an `AsyncProvider` with a subsequent operator.
+     make into an `AsyncProvider` with a subsequent modifier.
      - Parameter cache: The cache to use to fetch and store values.
      - Returns A ``SyncProvider`` `& Sendable` that caches its results in the given `cache`.
      */

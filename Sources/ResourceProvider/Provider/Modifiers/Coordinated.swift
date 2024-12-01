@@ -94,7 +94,7 @@ public extension AsyncProvider where Failure == Never, ID: Sendable, Value: Send
      Ensures that the provider will not do the same work twice when the same id is requested concurrently. Non-throwing
      version.
 
-     Finishing off an ``AsyncProvider`` with this operator unloads the responsibility of ensuring that work is not
+     Finishing off an ``AsyncProvider`` with this modifier unloads the responsibility of ensuring that work is not
      repeated for several concurrent requests for the same resource from all the others.
      - Note: Non-throwing and throwing versions of this exist because of `Swift.Task`'s current limitations around
      generic typed throws.
@@ -110,7 +110,7 @@ public extension AsyncProvider where ID: Sendable, Value: Sendable {
      Ensures that the provider will not do the same work twice when the same id is requested concurrently. Throwing
      version.
 
-     Finishing off an ``AsyncProvider`` with this operator unloads the responsibility of ensuring that work is not
+     Finishing off an ``AsyncProvider`` with this modifier unloads the responsibility of ensuring that work is not
      repeated for several concurrent requests for the same resource from all the others.
      - Note: Non-throwing and throwing versions of this exist because of `Swift.Task`'s current limitations around
      generic typed throws.

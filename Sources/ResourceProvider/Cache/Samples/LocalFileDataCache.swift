@@ -16,7 +16,7 @@ import System
 
  The cache is declared as synchronous for flexibility in use but it can also can be used safely from a concurrent
  context as long as the same file isn't accessed concurrently. The use of `.coordinated()` somewhere down the provider
- operator chain should guarantee it.
+ modifier chain should guarantee it.
 
  Availability limited by `FilePath` API only being declared in later OS versions.
  */

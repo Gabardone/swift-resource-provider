@@ -28,7 +28,7 @@ public extension SyncCache {
      force-converts a non-sendable synchronous cache into a sendable one, usually so you can apply ``concurrent()``
      or ``serialized()`` to it afterwards.
 
-     The operator can only be applied when both `ID` and `Value` are already `Sendable`. Use ``mapID(_:)-ughf`` and
+     The modifier can only be applied when both `ID` and `Value` are already `Sendable`. Use ``mapID(_:)-ughf`` and
      ``mapValueToStorage(_:fromStorage:)-23pui`` to achieve either if needed —if it involves `@unchecked Sendable`
      wrappers that's on you, the developer—.
      - Returns: An IKWID `SyncProvider` that has the exact same behavior as the caller but is seen by the compiler as

@@ -9,8 +9,8 @@ import Foundation
 import os
 
 /**
- Namespace `enum` for provider building. Declared extensions to it return the root of a provider, then operators can
- be applied to them.
+ Namespace `enum` for provider building. Declared extensions to it return the root of a provider, then modifiers can be
+ applied to them.
  */
 public enum Provider {}
 

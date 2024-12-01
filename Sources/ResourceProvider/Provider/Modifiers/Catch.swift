@@ -80,7 +80,7 @@ public extension SyncProvider where Self: Sendable {
      - If `OtherFailure == any Error` the resulting provider may throw whatever it wants.
      - If `OtherFailure != Failure` the provider may translate the original provider's errors into a different type.
 
-     This version of the operator maintains sendability so it can be more easily used with ``AsyncProvider`` or in other
+     This version of the modifier maintains sendability so it can be more easily used with ``AsyncProvider`` or in other
      concurrent contexts.
      - Parameter catcher: A block that gets called when errors are thrown with the error thrown and the `id` requested
      that cause the error to be thrown.
@@ -126,7 +126,7 @@ public extension AsyncProvider {
      - If `OtherFailure == any Error` the resulting provider may throw whatever it wants.
      - If `OtherFailure != Failure` the provider may translate the original provider's errors into a different type.
 
-     This version of the operator manages the exceptions synchonously, avoiding one extra concurrent jump.
+     This version of the modifier manages the exceptions synchonously, avoiding one extra concurrent jump.
      - Parameter catcher: A block that gets called when errors are thrown with the error thrown and the `id` requested
      that cause the error to be thrown.
      - Returns: An ``AsyncProvider`` that synchronously catches the exceptions thrown by the caller and processes them
@@ -169,7 +169,7 @@ public extension AsyncProvider {
      - If `OtherFailure == any Error` the resulting provider may throw whatever it wants.
      - If `OtherFailure != Failure` the provider may translate the original provider's errors into a different type.
 
-     This version of the operator manages the exceptions asynchonously, `await`-ing the error catch logic.
+     This version of the modifier manages the exceptions asynchonously, `await`-ing the error catch logic.
      - Parameter catcher: An `async` block that gets called when errors are thrown with the error thrown and the `id`
      requested that cause the error to be thrown.
      - Returns: An ``AsyncProvider`` that asynchronously catches the exceptions thrown by the caller and processes them
