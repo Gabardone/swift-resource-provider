@@ -8,15 +8,15 @@
 /**
  Type-erased ``SyncCache``.
 
- This wrapper value type can be (and is) used to build up adapters for actual cache types, and can also be used to
- build mocks for testing.
+ This wrapper value type can be used to build up adapters for actual cache types, build mocks for testing, and makes for
+ a good specific type to use for injected ``SyncCache`` stored properties.
  */
 public struct AnySyncCache<ID: Hashable, Value> {
     /**
      A type erased cache has its functionality injected as blocks.
      - Parameters:
-       - valueForID: Block that implements `SyncCache.value(for:)`
-       - storeValueForID: Block that implements `SyncCache.store(value:id:)`
+       - valueForID: Block that implements ``SyncCache.value(for:)``.
+       - storeValueForID: Block that implements ``SyncCache.store(value:id:)``.
      */
     public init(
         valueForID: @escaping (ID) -> Value? = { _ in nil },
@@ -26,10 +26,10 @@ public struct AnySyncCache<ID: Hashable, Value> {
         self.storeValueForID = storeValueForID
     }
 
-    /// Implements `SyncCache.value(for:)`
+    /// Implements ``SyncCache.value(for:)``.
     public let valueForID: (ID) -> Value?
 
-    /// Implements `SyncCache.store(value:id:)`
+    /// Implements ``SyncCache.store(value:id:)``.
     public let storeValueForID: (Value, ID) -> Void
 }
 

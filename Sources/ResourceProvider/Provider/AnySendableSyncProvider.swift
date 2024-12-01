@@ -6,24 +6,33 @@
 //
 
 /**
- Type-erased `SyncProvider & Sendable`
+ Type-erased ``SyncProvider`` `& Sendable`
 
- `AnySyncProvider` cannot be given conditional conformance to `Sendable` due to functions not being first class citizens
- in Swift, which leaves us with no support for the compiler logic we would need to establish the condition for
- conforming.
+ This wrapper value type can be used to build up adapters for actual provider types, build mocks for testing, and makes
+ for a good specific type to use for injected ``SyncProvider`` stored properties. Use this instead of
+ ``AnySyncProvider`` to preserve `Sendable` compliance.
 
- Basically if the type-erasing block is `@Sendable` you can build an `AnySendableSyncProvider`. This usually will also
- require that both `ID` and `Value` are either `Sendable` or `sending`. The latter option can be a bit glitchy as of
- Swift 6.0.
+ As a `Sendable` type, it plays more nicely with concurrent types such as ``AsyncCache`` and ``AsyncProvider``.
+
+ Because the Swift type system won't allow us to have conditional adoption of `Sendable` based on function types, we
+ need a separate type-erasing type for ``SyncProvider`` `& Sendable` as opposed to only ``SyncProvider``.
  */
 public struct AnySendableSyncProvider<ID: Hashable, Value, Failure: Error>: Sendable {
-    public typealias ValueForID = @Sendable (ID) throws(Failure) -> Value
-
-    public var valueForID: ValueForID
-
-    public init(valueForID: @escaping ValueForID) {
+    /**
+     A type-erased provider has its functionality injected as a block.
+     - Parameter valueForID: Implements ``SyncProvider.value(for:)``. Must be `@Sendable`
+     */
+    public init(valueForID: @escaping @Sendable (ID) throws(Failure) -> Value) {
         self.valueForID = valueForID
     }
+
+    /**
+     Implements ``SyncProvider.value(for:)``.
+
+     Must be `@Sendable`. Usually ID and Value will also need to adopt `Sendable` for the compiler to accept it but
+     other language options may also work.
+     */
+    public var valueForID: @Sendable (ID) throws(Failure) -> Value
 }
 
 extension AnySendableSyncProvider: SyncProvider {
@@ -31,6 +40,7 @@ extension AnySendableSyncProvider: SyncProvider {
         try valueForID(id)
     }
 
+    /// Optimize away the wrapper when requesting erasure of an already erased value.
     public func eraseToAnySendableSyncProvider() -> AnySendableSyncProvider<ID, Value, Failure> {
         self
     }

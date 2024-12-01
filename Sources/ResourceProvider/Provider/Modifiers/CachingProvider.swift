@@ -9,10 +9,10 @@ import Foundation
 
 public extension SyncProvider {
     /**
-     Adds caching to the calling provider.
+     Adds caching to the modified ``SyncProvider``.
 
-     Non-`Sendable` sync providers or those using a non-`Sendable` cache will result in a non-`Sendable`
-     ``SyncProvider``.
+     Modifying a Non-`Sendable` ``SyncProvider`` or applying a non-`Sendable` cache to a ``SyncProvider`` `& Sendable`
+     will result in a non-`Sendable` ``SyncProvider``.
      - Parameter cache: The cache to use to fetch and store values.
      - Returns A ``SyncProvider`` that caches its results in the given `cache`.
      */
@@ -30,8 +30,8 @@ public extension SyncProvider where Self: Sendable {
     /**
      Adds sendable sync caching to the calling provider, keeping sendability.
 
-     If both the provider and the cache are `Sendable`, the result also is `Sendable`, making it simpler and safer to
-     make into an `AsyncProvider` with a subsequent modifier.
+     This overload will be used if a ``SyncProvider`` `& Sendable` is modified to use a ``SyncCache`` `& Sendable`,
+     maintaining `Sendable` compliance.
      - Parameter cache: The cache to use to fetch and store values.
      - Returns A ``SyncProvider`` `& Sendable` that caches its results in the given `cache`.
      */
@@ -49,8 +49,9 @@ public extension AsyncProvider {
     /**
      Adds caching to the calling provider.
 
-     If you want to use a ``SyncCache``, you need to make it into an `AsyncCache`, making it `Sendable` and using
-     ``SyncCache.concurrent()``, ``SyncCache.serialized()`` or a custom-built adapter.
+     If you want to use a ``SyncCache``, you need to make it into an ``AsyncCache``, and for that you need a
+     `Sendable` compliance, then apply a modifier such as ``SyncCache.concurrent()`` or ``SyncCache.serialized()`` or a
+     custom-built adapter.
      - Parameter cache: The cache to use to fetch and store values.
      - Returns An ``AsyncProvider`` that caches its results in the given `cache`.
      */
