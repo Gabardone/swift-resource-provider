@@ -42,7 +42,7 @@ struct SyncProviderTest {
         inMemoryCacheStoreValidation: @escaping (PDFDocument, URL) -> Void = { _, _ in
             Issue.record("Unexpected call to local cache store.")
         }
-    ) -> some SyncProvider<URL, PDFDocument, any Error> {
+    ) -> AnySyncProvider<URL, PDFDocument, any Error> {
         Provider.source(source)
             .mapValue { data, _ in
                 // We convert to pdf document early to validate that the data is good. We wouldn't want to store bad
@@ -75,6 +75,7 @@ struct SyncProviderTest {
                 .storeValueForSideEffect(sideEffect: inMemoryCacheStoreValidation)
                 .valueForSideEffect(sideEffect: inMemoryCacheFetchValidation)
             )
+            .eraseToAnyProvider()
     }
 
     @Test func inMemoryDocumentHappyPath() throws {

@@ -89,7 +89,7 @@ public extension SyncProvider where Self: Sendable {
      */
     func `catch`<OtherFailure: Error>(
         _ catcher: @escaping @Sendable (Failure, ID) throws(OtherFailure) -> Value
-    ) -> some SendableSyncProvider<ID, Value, OtherFailure> {
+    ) -> some SyncProvider<ID, Value, OtherFailure> & Sendable {
         CatchingSendableSyncProvider(caught: self, catcher: catcher)
     }
 }

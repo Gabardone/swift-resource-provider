@@ -201,7 +201,7 @@ public extension SyncProvider where Self: Sendable {
      */
     func interject(
         _ interject: @escaping @Sendable (ID) -> Value?
-    ) -> some SendableSyncProvider<ID, Value, Failure> {
+    ) -> some SyncProvider<ID, Value, Failure> & Sendable {
         InterjectingNoFailureSendableSyncProvider(interjected: self, interjector: interject)
     }
 }
@@ -245,7 +245,7 @@ public extension SyncProvider where Self: Sendable {
      */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) throws(OtherFailure) -> Value?
-    ) -> some SendableSyncProvider<ID, Value, Failure> where OtherFailure == Failure {
+    ) -> some SyncProvider<ID, Value, Failure> & Sendable where OtherFailure == Failure {
         InterjectingSameFailureSendableSyncProvider(interjected: self, interjector: interject)
     }
 }
@@ -290,7 +290,7 @@ public extension SyncProvider where Self: Sendable {
      */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) throws(OtherFailure) -> Value?
-    ) -> some SendableSyncProvider<ID, Value, any Error> {
+    ) -> some SyncProvider<ID, Value, any Error> & Sendable {
         InterjectingAnyFailureSendableSyncProvider(interjected: self, interjector: interject)
     }
 }
@@ -331,7 +331,7 @@ public extension SyncProvider where Self: Sendable, Failure == Never {
      */
     func interject<OtherFailure: Error>(
         _ interject: @escaping @Sendable (ID) throws(OtherFailure) -> Value?
-    ) -> some SendableSyncProvider<ID, Value, OtherFailure> {
+    ) -> some SyncProvider<ID, Value, OtherFailure> & Sendable {
         InterjectingNewFailureSendableSyncProvider(interjected: self, interjector: interject)
     }
 }

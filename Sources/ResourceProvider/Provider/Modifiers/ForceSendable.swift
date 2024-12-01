@@ -30,7 +30,7 @@ extension SyncProvider {
      - Returns: An IKWID ``SyncProvider`` that has the exact same behavior as the caller but is seen by the compiler as
      `Sendable`
      */
-    func forceSendable() -> some SendableSyncProvider<ID, Value, Failure> {
+    func forceSendable() -> some SyncProvider<ID, Value, Failure> & Sendable {
         UncheckedSendableSyncProvider(syncProvider: self)
     }
 }
@@ -43,7 +43,7 @@ extension SyncProvider where Self: Sendable {
      actually apply it to a ``SyncProvider`` that is already `Sendable`.
      - Returns: Itself.
      */
-    func forceSendable() -> some SendableSyncProvider<ID, Value, Failure> {
+    func forceSendable() -> some SyncProvider<ID, Value, Failure> & Sendable {
         self
     }
 }

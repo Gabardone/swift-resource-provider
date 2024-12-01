@@ -71,7 +71,7 @@ public extension SyncProvider where Self: Sendable {
      */
     func mapID<OtherID: Hashable>(
         _ transform: @escaping @Sendable (OtherID) -> ID
-    ) -> some SendableSyncProvider<OtherID, Value, Failure> {
+    ) -> some SyncProvider<OtherID, Value, Failure> & Sendable {
         IDMappingSendableSyncProvider(mapped: self, idMapper: transform)
     }
 }

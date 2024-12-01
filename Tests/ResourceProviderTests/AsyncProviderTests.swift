@@ -32,7 +32,7 @@ final class AsyncProviderTests: XCTestCase {
         inMemoryCacheStoreValidation: @escaping @Sendable (CGImage, URL) -> Void = { _, _ in
             XCTFail("Unexpected call to local cache store.")
         }
-    ) -> some AsyncProvider<URL, CGImage, any Error> {
+    ) -> AnyAsyncProvider<URL, CGImage, any Error> {
         Provider.source(source)
             .mapValue { data, _ in
                 // We convert to image early so we validate that the data is good. We wouldn't want to store bad data.
@@ -65,6 +65,7 @@ final class AsyncProviderTests: XCTestCase {
                 .valueForSideEffect(sideEffect: inMemoryCacheFetchValidation)
             )
             .coordinated() // Always finish an `async` cache chain with this one. You usually need only one at the end.
+            .eraseToAnyProvider()
     }
 
     // If the data is already in-memory, immediately returns it.

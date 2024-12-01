@@ -198,7 +198,7 @@ public extension SyncProvider where Self: Sendable {
      */
     func mapValue<OtherValue>(
         _ transform: @escaping @Sendable (Value, ID) -> OtherValue
-    ) -> some SendableSyncProvider<ID, OtherValue, Failure> {
+    ) -> some SyncProvider<ID, OtherValue, Failure> & Sendable {
         ValueMappingNeverFailureSendableSyncProvider(mapped: self, valueMapper: transform)
     }
 }
@@ -239,7 +239,7 @@ public extension SyncProvider where Self: Sendable {
     @_disfavoredOverload
     func mapValue<OtherValue>(
         _ transform: @escaping @Sendable (Value, ID) throws(Failure) -> OtherValue
-    ) -> some SendableSyncProvider<ID, OtherValue, Failure> {
+    ) -> some SyncProvider<ID, OtherValue, Failure> & Sendable {
         ValueMappingSameFailureSendableSyncProvider(mapped: self, valueMapper: transform)
     }
 }
@@ -284,7 +284,7 @@ public extension SyncProvider where Self: Sendable {
     @_disfavoredOverload
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping @Sendable (Value, ID) throws(OtherFailure) -> OtherValue
-    ) -> some SendableSyncProvider<ID, OtherValue, any Error> {
+    ) -> some SyncProvider<ID, OtherValue, any Error> & Sendable {
         ValueMappingAnyFailureSendableSyncProvider(mapped: self, valueMapper: transform)
     }
 }
@@ -325,7 +325,7 @@ public extension SyncProvider where Self: Sendable, Failure == Never {
      */
     func mapValue<OtherValue, OtherFailure: Error>(
         _ transform: @escaping @Sendable (Value, ID) throws(OtherFailure) -> OtherValue
-    ) -> some SendableSyncProvider<ID, OtherValue, OtherFailure> {
+    ) -> some SyncProvider<ID, OtherValue, OtherFailure> & Sendable {
         ValueMappingNewFailureSendableSyncProvider(mapped: self, valueMapper: transform)
     }
 }
