@@ -17,7 +17,7 @@
 
  To make a ``SyncCache`` interact with asynchronous components (either ``AsyncCache`` or ``AsyncProvider``) they must
  be `Sendable` and adapted into ``AsyncCache``. See ``concurrent()`` and ``serialized()`` for the two most common
- async adapters, as well as ``forceSendable()-424bn`` to make a non-`Sendable` sync cache into a `Sendable` one —it's
+ async adapters, as well as ``forceSendable()-424bn`` to make a non-`Sendable` ``SyncCache`` into a `Sendable` one —it's
  up to the developer to ensure treating the ``SyncCache`` as `Sendable` is safe.
  */
 public protocol SyncCache<ID, Value> {

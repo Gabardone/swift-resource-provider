@@ -39,15 +39,15 @@ extension SyncCacheSerializer: AsyncCache {
 
 public extension SyncCache where Self: Sendable, ID: Sendable, Value: Sendable {
     /**
-     Returns a wrapper for a sync cache that guarantees serialization.
+     Returns a wrapper for a ``SyncCache`` `& Sendable` that guarantees serialization.
 
-     If a sync cache needs to be used in an `async` context and it doesn't play well with concurrency —usually because
-     you want to avoid data races with its state management— you will want to use this operator to make an
+     If a ``SyncCache`` needs to be used in an `async` context and it doesn't play well with reentrancy —usually
+     because you want to avoid data races with its state management— you will want to use this operator to make an
      ``AsyncCache`` out of it.
 
      This is not particularly problematic for very fast caches i.e. in-memory ones. Normally you will be using a
-     `Dictionary` or similar collection to keep your stored values around and those are both fast, when mutable, do not
-     play well with concurrency.
+     `Dictionary` or similar collection to keep your stored values around and those are very fast but would suffer from
+     data races were reentrancy to be allowed.
      - Note: Value must be `Sendable` because of Swift 6.0 weirdness. Likely to be relaxed in Swift 6.1
      - Returns: An ``AsyncCache`` version of the calling ``SyncCache`` that runs its calls serially.
      */

@@ -30,14 +30,16 @@ extension SyncProviderSerializer: AsyncProvider {
 
 public extension SyncProvider where Self: Sendable, ID: Sendable, Value: Sendable {
     /**
-     Returns a wrapper for a sync provider that guarantees serialization.
+     Returns a wrapper for a ``SyncProvider`` `& Sendable` that guarantees serialization.
 
-     If a sync provider needs to be used in an `async` context and it doesn't play well with concurrency —usually
-     because you want to avoid data races with its state management— you will want to wrap it in one of these.
+     If a ``SyncProvider`` needs to be used in an `async` context and it doesn't play well with reentrancy —usually
+     because you want to avoid data races with its state management— you will want to use this operator to make an
+     ``AsyncCache`` out of it.
 
-     - Todo: Talk about required sendability of ID & Value.
-     - Todo: Talk about IKWID for making valueForID functionally `@Sendable`
-     - Returns: An `async` provider version of the calling `SyncProvider` that runs its calls serially.
+     This is not particularly problematic for very fast providers i.e. generative ones that don't take long and require
+     access to a common resource that would cause data races if done concurrently.
+     - Note: Value must be `Sendable` because of Swift 6.0 weirdness. Likely to be relaxed in Swift 6.1
+     - Returns: An ``AsyncProvider`` version of the calling ``SyncProvider`` that runs its calls serially.
      */
     func serialized() -> some AsyncProvider<ID, Value, Failure> {
         SyncProviderSerializer(serializing: self)

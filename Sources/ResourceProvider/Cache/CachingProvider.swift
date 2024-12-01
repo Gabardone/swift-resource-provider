@@ -11,7 +11,8 @@ public extension SyncProvider {
     /**
      Adds caching to the calling provider.
 
-     Non-`Sendable` sync providers or those using a non-`Sendable` cache will result in a non-`Sendable` sync provider.
+     Non-`Sendable` sync providers or those using a non-`Sendable` cache will result in a non-`Sendable`
+     ``SyncProvider``.
      - Parameter cache: The cache to use to fetch and store values.
      - Returns A ``SyncProvider`` that caches its results in the given `cache`.
      */

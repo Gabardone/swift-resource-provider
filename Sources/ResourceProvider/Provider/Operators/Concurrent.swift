@@ -17,9 +17,8 @@ public extension SyncProvider where Self: Sendable {
     /**
      Returns a wrapper for a ``SyncProvider`` `& Sendable` that guarantees serialization.
 
-     If a sync provider needs to be used in a concurrent context, it can be moved between execution contexts
-     (`Sendable`) and it plays well with reentrancy you will want to use this operator to make it into an
-     ``AsyncProvider``.
+     If a ``SyncProvider`` needs to be used in an concurrent context and it plays well with reentrancy you will want to
+     use this operator to make it into an ``AsyncProvider``.
 
      While you can sidestep the `Sendable` requirement by using ``forceSendable()`` on a non-`Sendable` ``SyncProvider``
      you should be very sure that it will behave properly in a concurrent context. If you can't guarantee reentrance

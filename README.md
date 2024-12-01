@@ -250,7 +250,9 @@ basic avoidance of repeated work for the same ID is already taken care of by `co
 - That said, don't run declare your own actors when you have `.serialized()`, `.concurrent()` and `.coordinated()` to
 play with. Do so only if you need custom behaviors that those operators won't solve.
 - Keep things sync as much as you can and make them async as late as you can. Think through the consequences of running
-a sync provider or cache in an async environment and document the results. Normally but not always sticking to.
+a ``SyncProvider`` or ``SyncCache`` in an async environment and document the results. Use the given adapters
+(``serialized()`` and ``concurrent()`` depending on whether your design can deal with reentrancy while avoiding data
+races.
 - Just because a cache or provider is dealing with `Sendable` types doesn't mean that it works fine in a concurrent
 environment.
 - Bears repeating: always finish off an `AsyncProvider` with `coordinated()`

@@ -27,7 +27,7 @@ public extension SyncProvider {
     /**
      Builds a ``SyncProvider`` that catches the exceptions thrown by the calling one.
 
-     This modifier converts a throwing sync provider into one that `throws` differently. The catching block will
+     This modifier converts a throwing ``SyncProvider`` into one that `throws` differently. The catching block will
      only be called when the root provider `throws` and is in no obligation to `throw` itself (and in fact won't if
      `OtherFailure == Never`) and may filter out errors, perform side effects and return values instead of rethrowing.
 
@@ -69,9 +69,10 @@ public extension SyncProvider where Self: Sendable {
     /**
      Builds a ``SyncProvider`` `& Sendable` that catches the exceptions thrown by the calling one.
 
-     This modifier converts a throwing, `Sendable` sync provider into one that `throws` differently. The catching block
-     will only be called when the root provider `throws` and is in no obligation to `throw` itself (and in fact won't if
-     `OtherFailure == Never`) and may filter out errors, perform side effects and return values instead of rethrowing.
+     This modifier converts a throwing, ``SyncProvider`` `& Sendable` into one that `throws` differently. The catching
+     block will only be called when the root provider `throws` and is in no obligation to `throw` itself (and in fact
+     won't if `OtherFailure == Never`) and may filter out errors, perform side effects and return values instead of
+     rethrowing.
 
      Beyond that the behavior depends on the type of `OtherFailure`:
      - If `OtherFailure == Never` the resulting provider will become a non-throwing one.
@@ -115,7 +116,7 @@ public extension AsyncProvider {
     /**
      Builds an ``AsyncProvider`` that synchronously catches the exceptions thrown by the calling one.
 
-     This modifier converts a throwing async provider into one that `throws` differently. The catching block
+     This modifier converts a throwing ``AsyncProvider`` into one that `throws` differently. The catching block
      will only be called when the root provider `throws` and is in no obligation to `throw` itself (and in fact won't if
      `OtherFailure == Never`) and may filter out errors, perform side effects and return values instead of rethrowing.
 
@@ -158,7 +159,7 @@ public extension AsyncProvider {
     /**
      Builds an ``AsyncProvider`` that asynchronously catches the exceptions thrown by the calling one.
 
-     This modifier converts a throwing async provider into one that `throws` differently. The catching block
+     This modifier converts a throwing ``AsyncProvider`` into one that `throws` differently. The catching block
      will only be called when the root provider `throws` and is in no obligation to `throw` itself (and in fact won't if
      `OtherFailure == Never`) and may filter out errors, perform side effects and return values instead of rethrowing.
 

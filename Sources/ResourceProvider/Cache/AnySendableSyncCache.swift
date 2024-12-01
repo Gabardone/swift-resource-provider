@@ -9,7 +9,8 @@
  Type-erased `SyncCache & Sendable`
 
  This wrapper value type can be used to build up adapters for actual cache types, build mocks for testing, and makes for
- a good specific type to use for non-generic logic to store an async cache.
+ a good specific type to use for non-generic logic to store a ``SyncCache`` that is also `Sendable`, since using
+ ``AnySyncCache`` would lose `Sendable` status.
 
  As a `Sendable` type, it plays more nicely with concurrent types such as ``AsyncCache`` and ``AsyncProvider``.
 

@@ -9,7 +9,7 @@
  Type-erased ``AsyncCache``.
 
  This wrapper value type can be used to build up adapters for actual cache types, build mocks for testing, and makes for
- a good specific type to use for non-generic logic to store an async cache.
+ a good specific type to use for non-generic logic to store an ``AsyncCache``.
  */
 public struct AnyAsyncCache<ID: Hashable & Sendable, Value: Sendable> {
     /**

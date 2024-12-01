@@ -17,7 +17,7 @@ private struct UncheckedSendableSyncProvider<
 
 extension SyncProvider {
     /**
-     Forces a non-sendable sync provider into being `Sendable`. Use at your own risk.
+     Forces a non-sendable ``SyncProvider`` into being `Sendable`. Use at your own risk.
 
      It is a fact of life that we will often need to deal with legacy non-sendable types, or otherwise perform
      non-sendable operations in an "I Know What I'm Doing" way when interacting with older frameworks. This modifier
