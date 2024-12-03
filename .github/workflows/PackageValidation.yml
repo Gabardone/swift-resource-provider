@@ -42,4 +42,4 @@ jobs:
       - name: Select Xcode Version
         run: sudo xcode-select --switch ${{ vars.TOOLPATH }}
       - name: Build and Test
-        run: xcodebuild test -scheme ${{ github.event.repository.name }} -destination '${{ matrix.platforms.destination }}' -skipMacroValidation
+        run: xcodebuild test -scheme swift-resource-provider -destination '${{ matrix.platforms.destination }}' -skipMacroValidation

@@ -1,6 +1,6 @@
 # file options
 
---swiftversion 5.7
+--swiftversion 6.0
 
 # Fix rules that conflict with swiftlint defaults.
 --commas inline # Swiftlint calls for no final comma on collections.

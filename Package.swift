@@ -1,10 +1,10 @@
-// swift-tools-version: 5.10
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
-    name: "SwiftCache",
+    name: "swift-resource-provider",
     platforms: [
         // Minimum deployment version currently set by `Logger` release version.
         .iOS(.v14),
@@ -16,17 +16,24 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "SwiftCache",
-            targets: ["SwiftCache"]
+            name: "ResourceProvider",
+            targets: ["ResourceProvider"]
         )
     ],
     targets: [
         .target(
-            name: "SwiftCache"
+            name: "ResourceProvider",
+            swiftSettings: [
+                .swiftLanguageMode(.v6)
+            ]
         ),
         .testTarget(
-            name: "SwiftCacheTests",
-            dependencies: ["SwiftCache"]
+            name: "ResourceProviderTests",
+            dependencies: ["ResourceProvider"],
+            resources: [.process("Resources")],
+            swiftSettings: [
+                .swiftLanguageMode(.v6)
+            ]
         )
     ]
 )
